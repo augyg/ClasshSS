@@ -168,6 +168,17 @@ toKebabCase (x:xs) = toLower x : go xs
 
 
 
+-- | Util for dealing with existing, complex and masive CSS strings but adding on in Classh DSL
+alsoF :: T.Text -> [BoxConfig -> BoxConfig] -> T.Text
+alsoF s cfgMuts = s <> boxCSS (def `applyFs` cfgMuts) 
+
+also :: T.Text -> BoxConfig -> T.Text
+also s cfg = s <> boxCSS cfg
+  
+boxCSS :: BoxConfig -> T.Text
+boxCSS = showTW 
+
+
 
 
 
