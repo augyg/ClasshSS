@@ -1,11 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Classh where
 
+
+--import Common.Types (tshow)
+import Data.Char (toLower, isUpper)
+--import Reflex.Dom.Core
+
 import Language.Haskell.TH
-import Control.Monad (forM_)
 import Control.Lens (makeLenses, Lens',lens, ASetter, over)
 import Data.Default
 import qualified Data.Text as T
@@ -22,7 +28,41 @@ GOALS
 
 -}
 
+{-
+TODOS
+-------------------------------------
+->BoxConfig by Media Query
+f :: [BySize] -> BoxConfig
+         ^INTERNAL^
+  [BoxConfig -> BoxConfig]
 
+md = [ w = 4 , h = 9 , color = marigold ]
+-------------------------------------
+-> VelvetBox: a config type to describe a flex box like component
+   -> Min-width
+   -> Min-height  -- w+h mins so that content
+
+Items }} Box }} GridLayout
+
+Items: text, images, image content, radiobutton<--with-->label
+Box: components, which contain items
+GridLayout: Highly variably-sized element with tons of purposeful white-space 
+
+widthTotal <- element widthTotal $ do 
+  mkItem (w = 9)
+  mkItem (w = 9)
+
+|__<-- item -->____<--  item  -->__|  // Derive the min width to propogate upwards
+
+mkItem :: WriterT WidthTotal
+
+tell (w = 9)
+
+-}
+
+
+tshow :: Show a => a -> T.Text
+tshow = T.pack . show
 -- | A future research item for this library is how to work with accessibility
   -- do we need prerender ?
   -- is this gonna be reading in some config?
@@ -32,148 +72,22 @@ GOALS
   -- what features does this affect directly? indirectly?
 
 
+toKebabCase :: String -> String
+toKebabCase [] = []
+toKebabCase (x:xs) = toLower x : go xs
+  where
+    go [] = []
+    go (y:ys)
+      | isUpper y = '-' : toLower y : go ys
+      | otherwise = y : go ys
 
 
----- MOVE to reflex-dom-classh  ----------------------------------------------------------------------------------
-
-
-
-
--- intercalate :: DomBuilder t m => WhenTW TextSize -> T.Text -> [m ()] -> m ()
--- intercalate size inter (t:ts) = do
---   t >> prependAll size inter ts
---   where
---     prependAll _ _ [] = pure () 
---     prependAll s i (t:ts) = elClass "span" (renderWhenTW s showTW ) (text i) >> t >> prependAll s i ts
-
--- -- | Works by setting top padding by one consistent value. Does not add padding for first element
--- paragraphs :: DomBuilder t m => WhenTW TWSize -> [m ()] -> m () 
--- paragraphs spacing (r:rows) = do
---   row [] $ r
---   withTopPadding spacing rows
---   where
---     withTopPadding _ [] = pure ()
---     withTopPadding p (r:rs) = row [t .~ p] r >> withTopPadding p rs 
-
--- -- | Works by setting top padding variably
--- paragraphs' :: DomBuilder t m => [(WhenTW TWSize, m ())] -> m () 
--- paragraphs' ((s,r):rows) = row [t .~ s] r >> paragraphs' rows
-
--- rows :: DomBuilder t m => [(WhenTW TWSize, m ())] -> m () 
--- rows = paragraphs' 
-
--- -- | TODO: should we have a variant which controls for padding needs when being a full row? What should that look like? Do we even need that??
--- responsiveRowCol :: DomBuilder t m => [Int] -> m a -> m a
--- responsiveRowCol colSpans m =
---   let spandex = renderWhenTW (zipScreens colSpans) ((<>) "col-span-" . tshow) 
---   in elClass "div" spandex m
-           
-
-
--- elTW :: DomBuilder t m => T.Text -> BoxConfig -> m a -> m a
--- elTW tag cfg m = elClass tag (defaultClasses <> " " <> showTW cfg) m
-
--- elTW' :: DomBuilder t m => T.Text -> BoxConfig -> m a -> m (Element EventResult (DomBuilderSpace m) t, a)
--- elTW' tag cfg m = elClass' tag (defaultClasses <> " " <> showTW cfg) m
-
--- elDynTW :: (PostBuild t m, DomBuilder t m) => T.Text -> Dynamic t BoxConfig -> m a -> m a
--- elDynTW tag cfgDyn m = elDynClass tag ( (\cfg -> defaultClasses <> " " <> showTW cfg) <$> cfgDyn ) m
-
--- elDynTW' :: (PostBuild t m, DomBuilder t m) => T.Text -> Dynamic t BoxConfig -> m a -> m (Element EventResult (DomBuilderSpace m) t, a)
--- elDynTW' tag cfgDyn m = elDynClass' tag ( (\cfg -> defaultClasses <> " " <> showTW cfg) <$> cfgDyn ) m
-
-
-
--- -- | TODO: variants which do not get checked/compiled
--- textS :: DomBuilder t m => CompiledS -> T.Text -> m ()
--- textS s txt = elClass "span" s $ text txt
-
--- textDynS :: (PostBuild t m, DomBuilder t m) => Dynamic t CompiledS -> T.Text -> m ()
--- textDynS s txt = elDynClass "span" s $ text txt
-
--- dynTextS :: (PostBuild t m, DomBuilder t m) => CompiledS -> Dynamic t T.Text -> m ()
--- dynTextS s txt = elClass "span" s $ dynText txt
-
--- dynTextDynS :: (PostBuild t m, DomBuilder t m) => Dynamic t CompiledS -> Dynamic t T.Text -> m ()
--- dynTextDynS s txt = elDynClass "span" s $ dynText txt
-
--- -- | Purposefully designed to take no other data besides ColInt in order to be very self-contained
--- gridCol :: DomBuilder t m => ColInt -> m a -> m a
--- gridCol cInt ma = elClass "div" ("grid grid-cols-" <> showTW cInt) ma
-
--- data RowDivisor = RD1 | RD2 | RD3 | RD4 | RD6 | RD12  
-
--- -- | TODO: this should have the ability to add rows somehow
--- -- | and how we can think of this is that if we start at a large->Col12 and scale down to
--- -- | lets say a 'sm' then Col12 / n where n is from config. So lets say n=2 then sm->Col6 which will show up as
--- -- | 2 rows of 6; similarly n=6 => 6 rows of 2 ; n=12 -> 12 rows of 1; n=3 => 3 rows of 4 ; n=4 => 4 rows of 3  
--- gridColWhen :: DomBuilder t m => WhenTW ColInt -> m a -> m a
--- gridColWhen cInts ma = elClass "div" (showCInts cInts) ma 
---   where
---     showCInts [] = ""
---     showCInts (("def",cInt):cInts) = "grid grid-cols-" <> showTW cInt <&> showCInts cInts 
---     showCInts ((w,cInt):cInts) = w <> ":" <> "grid" <&> w <> ":" <> "grid-cols-" <> showTW cInt
---                                  <&> showCInts cInts 
-
--- -- | Denotes a normal row. Does not have inline-block 
--- -- row :: DomBuilder t m => BoxPadding -> m a -> m a 
--- -- row padding = elClass "div" ( "" <&> showTW padding )
-
--- gridColW :: DomBuilder t m => ColInt -> TWSizeOrFraction -> m a -> m a
--- gridColW cInt width ma = elClass "div" ("grid grid-cols-" <> showTW cInt <&> ("w-" <> showTW width)) ma
-
-
-
--- row :: DomBuilder t m => [BoxPadding -> BoxPadding] -> m a -> m a 
--- row paddingF = elClass "div" ( "" <&> showTW (applyFs def paddingF) )
-
-
-
-
-
-
-
-
-
-
----- MOVE to reflex-dom-classh  ----------------------------------------------------------------------------------
 
 --instance ShowTW (WhenTW a)
 
 -- | TODO:
   -- use template haskell to autogenerate types from a CSS file eg if classes blah and blah2 exist
-  -- data UserCSS = Blah | Blah2 
- 
-
-
--- | Not real: just ideating
--- | How can we model a discrete set of consistent brand options?
---
--- data Mytextsize = Heading | Subtext | Normal
--- domain = Map.fromList [ (Heading , XL7) , (Normal , XL3) , (Subtext , XS) ]
---
--- brandF :: k -> WhenTW k
--- brandF (domainType :: Ord k => k) =
---   let baseSize = fromJust $ Map.lookup domainType (domain :: Map (k :: Ord k => k) (v :: ShowTW x => x))
---   in
---     autoScale baseSize 
---
--- then this above code suggests that we should think of our domain as mobile first 
--- it is important to remember this is not meant to represent 100% of CSS but rather ~80%
--- and should be a way to communicate branding concisely such that a stoopid cud impl. it to be
--- consistent 
---
--- Now, it wont always be super complex: for example, color
---
--- def = TW.def & text_color .~ only aceBlue
---
--- But then again, a brand may have multiple colors
---
--- brandColors = Map.fromList [ (AceBlue, hex _), (AceNavyBlue, hex _), (AceBabyBlue, hex _) ]
--- and also:
-       -- What about dark mode? \
-       --
--- and note: lets say 90% of titles should have Bold as their weight, we can set this and 
+  -- data UserCSS = Blah | Blah2
 
 
 
@@ -183,7 +97,7 @@ GOALS
 
 -- module MyTWConfig where
 
--- def = TW.def & text_color .~ only aceBlue
+-- def = TW.def & text_color .~~ aceBlue
 
 -- then
 
@@ -260,45 +174,71 @@ GOALS
 
 
 
-tshow :: Show a => a -> T.Text
-tshow = T.pack . show
 
 
-
-
+-- | Eg tic tac toe, except we use to describe position of element
+data Matrix33
+  = UpL
+  | UpM
+  | UpR
+  | MidL
+  | MidM
+  | MidR
+  | DownL
+  | DownM
+  | DownR
 
 
 
 -- HELPFUL CONSTANTS
-centeredOnly = only centered
+
+topLeft, middleLeft, bottomLeft, topCenter, centered, bottomCenter, topRight, middleRight, bottomRight
+  :: (Justify, Align)
+topLeft = (J_Start, A_Start)
+middleLeft = (J_Start, A_Center)
+bottomLeft = (J_Start, A_End)
+
+topCenter = (J_Center, A_Start)
 centered = (J_Center, A_Center)
+bottomCenter = (J_Center, A_End)
+
+topRight = (J_End, A_Start)
+middleRight = (J_End, A_Center)
+bottomRight = (J_End, A_End)
+
+
+fitToContents :: (WhenTW TWSizeOrFraction, WhenTW TWSizeOrFraction)
+fitToContents = (only TWSize_Fit, only TWSize_Fit)
+
+centeredOnly :: WhenTW (Justify, Align)
+centeredOnly = only centered
 
 --------------------
-
+defaultClasses :: T.Text
 defaultClasses = "" -- "grid"
 
 
 
 
--- buttonC :: Map.Map T.Text T.Text -> m a -> m (Event t a)
--- buttonC attrs inner = do
---   (e,x) <- elAttr' "button" attrs inner
---   pure $ x <$ domEvent Click e
 
 
--- | TODO: styledParagraphs :: [( BottomPadding, [(tw,T.Text)])] -> m ()
--- then apply to bannerFor in Landing.*
+-- :: [ [ 
+-- [ [w .~ 1, h .~ 1] , [ w .~ 5, h .~ 4 ] ] 
+--   classh' [w .~: "md" 5, h .|~ [1,4] ]
 
 
 
-applyFs :: a -> [a -> a] -> a 
+data RowDivisor = RD1 | RD2 | RD3 | RD4 | RD6 | RD12
+
+
+applyFs :: a -> [a -> a] -> a
 applyFs b fs = foldl (\acc f -> f acc) b fs
 
 type CompiledS = T.Text
 -- newtype CompiledS a = CompiledS T.Text
 -- newtype CompiledS = CompiledS T.Text
 -- type CompiledS a = T.Text
--- rowC :: DomBuilder t m => CompiledS BoxPadding -> m a -> m a 
+-- rowC :: DomBuilder t m => CompiledS BoxPadding -> m a -> m a
 -- rowC padding = elClass "div" ( "" <&> padding )
 
 
@@ -310,12 +250,38 @@ a <&> b
   | b == "" = a
   | otherwise = a <> " " <> b
 
+sm, md, lg, xl, _2xl :: T.Text 
+sm = "sm"
+md = "md"
+lg = "lg"
+xl = "xl"
+_2xl = "2xl"
 
+-- data TWCondition_V2
+--   = S_Mobile
+--   | S_SM
+--   | S_MD
+--   | S_LG
+--   | S_XL
+--   | S_2XL
+--   | On T.Text
+--   deriving (Eq, Read, Ord, Show, Enum, Bounded)
 
+-- zipScreens_v2 :: [a] -> WhenTW a
+-- zipScreens_v2 xs =
+--   let
+--     sizes :: TWCondition_V2
+--     sizes = take 6 [minBound .. maxBound] -- ["def", "sm", "md", "lg", "xl", "2xl"]
+--   in zip sizes xs
+
+sizes :: [T.Text]
 sizes = ["def", "sm", "md", "lg", "xl", "2xl"]
 
 zipScreens :: [a] -> WhenTW a
-zipScreens xs = zip sizes xs 
+zipScreens xs = zip sizes xs
+
+zipS :: [a] -> WhenTW a
+zipS = zipScreens
 
 zipScreensWith :: (a -> b) -> [a] -> WhenTW b
 zipScreensWith f xs = zip sizes (f <$> xs)
@@ -324,11 +290,13 @@ zipScreensWith f xs = zip sizes (f <$> xs)
 -- (:.) a = [a]
 
 
+
+
 -- | it would be awesome to have a map like function that could be used like config for text size
 -- | mappy = Map.fromList [(Heading, _), (Maintext, _) ... ]
 -- |
 -- | and effectively this is a model of the branding which will allow for consistency
-  -- | AND!!! because the new model, models responsive design we can make scaling and brand design expressable as a Map 
+  -- | AND!!! because the new model, models responsive design we can make scaling and brand design expressable as a Map
 
 autoScalePx :: Int -> WhenTW TWSize
 autoScalePx pixels =
@@ -351,7 +319,7 @@ autoScalePx pixels =
     scalePx p factor = pix . round $ fromIntegral p * factor
 
 
--- | autoScalePx = autoScalePx' 1.0 
+-- | autoScalePx = autoScalePx' 1.0
 autoScalePx' :: Float -> Int -> WhenTW TWSize
 autoScalePx' userOpt pixels =
   [ ("def", scalePx pixels 1.0)
@@ -374,7 +342,7 @@ autoScalePx' userOpt pixels =
 
 
 
---  GOAL:
+-- | GOAL:
 -- autoScalePx :: Int -> WhenTW TWSize
 -- autoScalePx px =
 --   [ (S_Mobl, px)
@@ -416,10 +384,43 @@ infixr 4 .~+
 (.~+) :: ASetter s t [a] [a] -> [a] -> s -> t
 lens .~+ newVals = over lens (++ newVals)
 
-
---infixr 4 .~+
+infixr 4 .+
 (.+) :: ASetter s t [a] [a] -> [a] -> s -> t
 (.+) = (.~+)
+
+--only_ = (.++)
+infixr 4 .++
+(.++) :: ASetter s t (WhenTW a) (WhenTW a) -> a -> s -> t
+lens .++ newVals = over lens (++ (only newVals))
+
+-- o = (.~~)
+-- only = o
+infixr 4 .~~
+(.~~) :: ASetter s t b (WhenTW a) -> a -> s -> t
+lens .~~ newVals = over lens (const $ only newVals)
+
+infixr 4 .|~
+(.|~) :: ASetter s t b (WhenTW a) -> [a] -> s -> t
+lens .|~ newVals = over lens (const $ zipScreens newVals)
+
+infixr 4 .|+
+(.|+) :: ASetter s t (WhenTW a) (WhenTW a) -> [a] -> s -> t
+lens .|+ newVals = over lens (++ (zipScreens newVals))
+
+-- .:|
+
+--   4 .:| 5 .:|
+
+-- infixl 4 .:|
+-- (.:|) :: ASetter s t (WhenTW a) (WhenTW a) -> a -> s -> t
+-- lens .:| newVal = over lens (\initial -> initial
+--                               <> (zip (drop (length initial) sizes) [newVal])
+--                             )
+  -- where
+  --   twCondsLeft = drop (length initial) sizes
+  --   maybeMore = zip twCondsLeft [newVal]
+
+
 
 renderWhenTW :: WhenTW a -> (a -> T.Text) -> T.Text
 renderWhenTW tws construct = foldr (<&>) mempty $
@@ -435,6 +436,11 @@ compileWhenTW tws construct = case f $ fmap fst tws of
       if elem s ss
       then Left $ s <> " exists twice"
       else f ss
+
+
+
+--foldr ((<&>) . (\(c,p) -> (if c == "def" then "" else (c <> ":")) <> construct p)) mempty
+
 
 
 -- | Checkers on the lib user's input to ensure no *unintended repetition
@@ -456,16 +462,18 @@ addUnique = undefined
 --     else fail
 ---------------
 
-classh :: CompileStyle s => s -> [(s -> s)] -> Q Exp 
+classh :: CompileStyle s => s -> [(s -> s)] -> Q Exp
 classh base muts = case compileS $ foldl (\acc f -> f acc) base muts of
   Left e -> fail $ T.unpack e
   Right styleString -> [| styleString |]
 
-classh' :: (Default s, CompileStyle s) => [(s -> s)] -> Q Exp 
+classh' :: (Default s, CompileStyle s) => [(s -> s)] -> Q Exp
 classh' muts = case compileS $ foldl (\acc f -> f acc) def muts of
   Left e -> fail $ T.unpack e
   Right styleString -> [| styleString |]
 
+-- | Doesn't use TemplateHaskell, this is meant for making lib functions since we need args
+-- | from outside the would-be TH context
 classhUnsafe :: (Default a, ShowTW a) => [a -> a] -> T.Text
 classhUnsafe muts = showTW $ def `applyFs` muts
 
@@ -474,8 +482,8 @@ instance CompileStyle BoxConfig where
   compileS cfg = do
     pure . foldr (<&>) mempty =<< sequenceA
       [ compilePos (_position cfg)
-      , compileWhenTW (_colStart cfg) ((<>) "col-start-" . tshow)      
-      , compileWhenTW (_colSpan cfg) ((<>) "col-span-" . tshow)    
+      , compileWhenTW (_colStart cfg) ((<>) "col-start-" . tshow)
+      , compileWhenTW (_colSpan cfg) ((<>) "col-span-" . tshow)
       , compileBorder (_border cfg)
       , compileSizingBand (_sizingBand cfg)
       , compilePadding (_padding cfg)
@@ -556,14 +564,16 @@ compilePadding cfg = pure . foldr (<&>) mempty =<< sequenceA
   , compileWhenTW (_paddingT cfg) ((<>) "pt-" . showTW)
   , compileWhenTW (_paddingB cfg) ((<>) "pb-" . showTW)
   ]
-          
-          
+
+
 
 instance CompileStyle TextConfigTW where
   compileS cfg = pure . foldr (<&>) mempty =<< sequenceA
     [ compileWhenTW (_text_size cfg) showTW
     , compileWhenTW (_text_weight cfg) showTW
     , compileWhenTW (_text_font cfg) showTW
+    , compileWhenTW (_text_style cfg) showTW
+    , compileWhenTW (_text_cursor cfg) showTW
     , compileWhenTW (_text_color cfg) ((<>) "text-" . showTW)
     , compileDecoration (_text_decoration cfg)
     , Right $ _text_custom cfg
@@ -583,8 +593,8 @@ instance CompileStyle TextConfigTW where
 
 
 class HasCSSSize tw where
-  pix :: Int -> tw --Lens' tw Int 
-  pct :: Int -> tw 
+  pix :: Int -> tw --Lens' tw Int
+  pct :: Int -> tw
   vh :: Int -> tw
   vw :: Int -> tw
   rem :: Float -> tw
@@ -602,9 +612,9 @@ instance HasCSSSize TWSizeOrFraction where
   vh = TWSize' . TWSize_Custom . Vh --vh
   vw = TWSize' . TWSize_Custom . Vw--vw
   rem = TWSize' . TWSize_Custom . Rem -- Classh.rem
-  
+
 class HasCustom tw where
-  custom :: Lens' tw T.Text 
+  custom :: Lens' tw T.Text
 
 class CompileStyle tw where
   compileS :: tw -> Either T.Text T.Text
@@ -629,6 +639,13 @@ class SetSides tw a where
 
 type TWCondition = T.Text
 type WhenTW a = [(TWCondition, a)]
+newtype WhenTW' a = WhenTW' { unWhenTW :: [(TWCondition, a)] }
+
+-- Useful for when you want config relative to another one.
+-- eg. width2 = width1 + 1px
+instance Functor WhenTW' where
+  fmap f whenTW = WhenTW' $ fmap (\(c,a) -> (c, f a)) $ unWhenTW whenTW
+
 
 data BoxConfig = BoxConfig
   { _colStart :: WhenTW Int
@@ -707,12 +724,15 @@ data BorderWidthSides = BorderWidthSides
   , _borderWidth_b :: WhenTW BorderWidth
   } deriving Show
 
+
 data TextConfigTW = TextConfigTW
   { _text_size :: WhenTW TextSize
   , _text_weight :: WhenTW TextWeight
   , _text_font :: WhenTW Font -- many options -- EG. Sarabun -> font-[Sarabun]
   , _text_color :: WhenTW Color
   , _text_decoration :: TextDecorationTW
+  , _text_style :: WhenTW FontStyle
+  , _text_cursor :: WhenTW CursorStyle
   , _text_custom :: T.Text
   }
 
@@ -737,7 +757,7 @@ instance Default BoxMargin where
   def = BoxMargin def def def def -- (TWSize 0) (TWSize 0) (TWSize 0) (TWSize 0)
 
 instance Default TextConfigTW where
-  def = TextConfigTW def def def def def ""
+  def = TextConfigTW def def def def def def def ""
 
 instance Default TextDecorationTW where
   def = TextDecorationTW def def def def def
@@ -763,6 +783,7 @@ instance Default BoxSizingBand where
 instance Default BoxSizingConstraint where
   def = BoxSizingConstraint def def -- DC_none DC_none
 
+
 ------------  END: Defaults of Records
 
 ------------  ShowTW of Records
@@ -775,6 +796,8 @@ instance ShowTW TextConfigTW where
     [ renderWhenTW (_text_size cfg) showTW
     , renderWhenTW (_text_weight cfg) showTW
     , renderWhenTW (_text_font cfg) showTW
+    , renderWhenTW (_text_style cfg) showTW
+    , renderWhenTW (_text_cursor cfg) showTW
     , renderWhenTW (_text_color cfg) ((<>) "text-" . showTW)
     , showTW (_text_decoration cfg)
 --    , "align-left"
@@ -799,7 +822,7 @@ instance ShowTW BoxConfig where
    [ renderWhenTW (_colStart cfg) ((<>) "col-start-" . tshow)
    , renderWhenTW (_colSpan cfg) ((<>) "col-span-" . tshow)
    , renderWhenTW (_bgColor cfg) ((<>) "bg-" . showTW)
-   , renderWhenTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow)                              
+   , renderWhenTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow)
    , showTW . _border $ cfg
    , showTW . _sizingBand $ cfg
    , showTW . _padding $ cfg
@@ -808,8 +831,8 @@ instance ShowTW BoxConfig where
      (\(c,(jus,align)) ->
         let pre = if c == "def" then "" else (c <> ":")
         in pre <> "grid" <&> pre <> (showTW jus) <&> pre <> (showTW align)
-     ) $ _position cfg 
-   , renderWhenTW (_position cfg) $ \(j,a) -> "grid " <> showTW j <> " " <> showTW a
+     ) $ _position cfg
+   --, renderWhenTW (_position cfg) $ \(j,a) -> "grid " <> showTW j <> " " <> showTW a
    , _box_custom cfg
    ]
 
@@ -865,10 +888,10 @@ instance ShowTW BorderRadiusCorners where
 
 instance ShowTW BorderWidthSides where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_borderWidth_l cfg) ((<>) "border-l-" . showTW)
-    , renderWhenTW (_borderWidth_r cfg) ((<>) "border-r-" . showTW)
-    , renderWhenTW (_borderWidth_t cfg) ((<>) "border-t-" . showTW)
-    , renderWhenTW (_borderWidth_b cfg) ((<>) "border-b-" . showTW)
+    [ renderWhenTW (_borderWidth_l cfg) ((<>) "border-l" . showTW)
+    , renderWhenTW (_borderWidth_r cfg) ((<>) "border-r" . showTW)
+    , renderWhenTW (_borderWidth_t cfg) ((<>) "border-t" . showTW)
+    , renderWhenTW (_borderWidth_b cfg) ((<>) "border-b" . showTW)
     ]
 
 instance ShowTW BorderColorSides where
@@ -960,6 +983,56 @@ instance Default BorderStyle where
 instance ShowTW BorderStyle where
   showTW = T.toLower . T.drop 1 . tshow
 
+
+
+
+
+data CursorStyle
+  = CursorAuto
+  | CursorDefault
+  | CursorPointer
+  | CursorWait
+  | CursorText
+  | CursorMove
+  | CursorHelp
+  | CursorNotAllowed
+  | CursorNone
+  | CursorContextMenu
+  | CursorProgress
+  | CursorCell
+  | CursorCrosshair
+  | CursorVerticalText
+  | CursorAlias
+  | CursorCopy
+  | CursorNoDrop
+  | CursorGrab
+  | CursorGrabbing
+  | CursorAllScroll
+  | CursorColResize
+  | CursorRowResize
+  | CursorNResize
+  | CursorEResize
+  | CursorSResize
+  | CursorWResize
+  | CursorNEResize
+  | CursorNWResize
+  | CursorSEResize
+  | CursorSWResize
+  | CursorEWResize
+  | CursorNSResize
+  | CursorNESWResize
+  | CursorNWSEResize
+  | CursorZoomIn
+  | CursorZoomOut
+  deriving Show
+
+instance Default CursorStyle where
+  def = CursorDefault
+
+instance ShowTW CursorStyle where
+  showTW cursor = T.pack $ toKebabCase (show cursor)
+
+
 -- | TODO: Isolate in own module since only used for gridCol
 data ColInt
   = Col1
@@ -1002,7 +1075,7 @@ data TWSize
 instance ShowTW TWSize where
   showTW = \case
     TWSize float ->
-      if fromIntegral (truncate float) == float
+      if fromIntegral (truncate float :: Int) == float
       then tshow $ (truncate float :: Int)
       else tshow float
     TWSize_Custom c -> "[" <> renderCSS c <> "]"
@@ -1067,7 +1140,7 @@ instance Default Align where
 instance ShowTW Justify where
   showTW = (<>) "justify-items-" . T.toLower . T.drop 2 . T.pack . show
 instance ShowTW Align where
-  
+
   showTW = (<>) "content-" . T.toLower . T.drop 2 . T.pack . show
 
 -- | TODO: this is technically wrong: there are different classes for width vs height but oh well for now
@@ -1381,7 +1454,20 @@ instance Default TextDecOffset where
 
 instance ShowTW TextDecOffset where
   showTW (TextDecOffset tnum) = "underline-offset-" <> (showTW tnum)
+  showTW (TextDecOffset_Custom cssS) = "underline-offset-[" <> (renderCSS cssS) <> "]"
   --showTWWhen c tw = c <> ":" <> (showTW tw)
+
+
+data FontStyle
+  = Italic
+  | NotItalic
+  deriving Show
+
+instance Default FontStyle where
+  def = NotItalic
+
+instance ShowTW FontStyle where
+  showTW font = T.pack $ toKebabCase (show font)
 
 data TextSize
   = XS
@@ -1515,9 +1601,11 @@ instance ShowTW Color where
   showTW Transparent = "transparent"
   showTW Black = "black"
   showTW White = "white"
-  showTW color =
-    let c:(mag):[] = T.words $ tshow color
-    in (T.toLower c) <> "-" <> (T.drop 1 mag)
+  showTW color = case T.words $ tshow color of
+    c:(mag):[] -> (T.toLower c) <> "-" <> (T.drop 1 mag) -- T.words $ tshow color
+    _ -> "ClasshSS: failed on input" <> (tshow color)
+          
+    -- in (T.toLower c) <> "-" <> (T.drop 1 mag)
 
 --  showTWWhen c tw = showTW tw
   --
@@ -1574,7 +1662,7 @@ instance SetSides BoxPadding TWSize where
                                       , _paddingL = new
                                       , _paddingR = new
                                       }
-  
+
 instance SetSides BorderRadiusCorners BorderRadius' where
   l = borderRadius_l
   r = borderRadius_r
@@ -1617,10 +1705,10 @@ instance SetSides BorderColorSides Color where
 
 
 instance HasCustom BoxConfig where
-  custom = box_custom 
+  custom = box_custom
 
 instance HasCustom TextConfigTW where
-  custom = text_custom 
+  custom = text_custom
 
 
 -- deprecated?
@@ -1631,16 +1719,16 @@ instance HasCustom TextConfigTW where
 
 
 pt, pl, pr, pb, px, py, p :: Lens' BoxConfig (WhenTW TWSize)
-pt = padding . t 
+pt = padding . t
 pb = padding . b
 pl = padding . l
 pr = padding . r
 px = padding . x
-py = padding . y 
+py = padding . y
 p = padding . allS
 
 mt, ml, mr, mb, mx, my, m :: Lens' BoxConfig (WhenTW TWSize)
-mt = margin . t 
+mt = margin . t
 mb = margin . b
 ml = margin . l
 mr = margin . r
@@ -1649,55 +1737,48 @@ my = margin . y
 m = margin . allS
 
 
-
+-- | If I want to make this not undefined, then I need pos to be an
+-- | actual field, which contains Justify and Align as its own record fields
 pos :: Lens' BoxConfig (WhenTW (Justify, Align))
-pos = lens undefined $ \cfg new -> cfg { _position =  new }
+pos = position --lens undefined $ \cfg new -> cfg { _position =  new }
+
 -- pos :: Lens' BoxConfig (Justify, Align)
 -- pos = position . _Just
-width', height', w, h :: Lens' BoxConfig (WhenTW TWSizeOrFraction) 
+width', height', w, h :: Lens' BoxConfig (WhenTW TWSizeOrFraction)
 width' = sizingBand . size . width
 height' = sizingBand . size . height
 w = width'
 h = height'
 
+br_r, br_l, br_t, br_b, br_y, br_x, br :: Lens' BoxConfig (WhenTW BorderRadius')
+br_r = border . radius . r 
+br_l = border . radius . l
+br_t = border . radius . t
+br_b = border . radius . b
+br_y = border . radius . y
+br_x = border . radius . x
+br = border . radius . allS 
 
--- v1_box :: BoxConfig
--- v1_box = def
---      & colSpan .~ onlyDef
---      & colStart .~ onlyDef
---      & bgColor .~ onlyDef
---      & bgOpacity .~ onlyDef
---      & padding .~ (def
---                    & t .~ onlyDef
---                    & b .~ onlyDef
---                    & r .~ onlyDef
---                    & l .~ onlyDef
---                   )
---      & margin .~ (def
---                   & t .~ onlyDef
---                   & b .~ onlyDef
---                   & r .~ onlyDef
---                   & l .~ onlyDef
---                  )
---      & sizingBand .~ (def
---                       & maxSize .~ (def
---                                     & widthC .~ onlyDef
---                                     & heightC .~ onlyDef
---                                    )
---                        & minSize .~ (def
---                                     & widthC .~ onlyDef
---                                     & heightC .~ onlyDef
---                                    )
---                        & size .~ (def
---                                   & width .~ onlyDef
---                                   & height .~ onlyDef
---                                  )
---                      )
---      & border .~ (def
---                   & bStyle .~ onlyDef
---                   & bColor .~ (def & allS .~ onlyDef)
---                   & bWidth .~ (def & allS .~ onlyDef)
---                   & radius .~ ((def :: BorderRadiusCorners) & allS .~ onlyDef)
---                  )
---      & position .~ [("def", (def,def))]
 
+bw_r, bw_l, bw_t, bw_b, bw_y, bw_x, bw :: Lens' BoxConfig (WhenTW BorderWidth)
+bw_r = border . bWidth . r 
+bw_l = border . bWidth . l
+bw_t = border . bWidth . t
+bw_b = border . bWidth . b
+bw_y = border . bWidth . y
+bw_x = border . bWidth . x
+bw = border . bWidth . allS 
+
+
+bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Lens' BoxConfig (WhenTW Color)
+bc_r = border . bColor . r 
+bc_l = border . bColor . l
+bc_t = border . bColor . t
+bc_b = border . bColor . b
+bc_y = border . bColor . y
+bc_x = border . bColor . x
+bc = border . bColor . allS 
+
+
+t_italic :: TextConfigTW -> TextConfigTW 
+t_italic = text_style .~~ Italic
