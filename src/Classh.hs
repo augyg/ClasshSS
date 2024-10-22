@@ -15,6 +15,7 @@ import Language.Haskell.TH
 import Control.Lens (makeLenses, Lens',lens, ASetter, over)
 import Data.Default
 import qualified Data.Text as T
+import Data.Text (Text)
 
 {-
 GOALS
@@ -388,6 +389,12 @@ autoScalePx' userOpt pixels =
 only :: a -> WhenTW a
 only p = ("def", p):[]
 
+-- | Synonym to only
+always :: a -> WhenTW a 
+always = only 
+
+
+
 onlyDef :: (Default a, ShowTW a) => WhenTW a
 onlyDef = ("def", def):[]
 
@@ -436,6 +443,24 @@ lens .|+ newVals = over lens (++ (zipScreens newVals))
 renderWhenTW :: WhenTW a -> (a -> T.Text) -> T.Text
 renderWhenTW tws construct = foldr (<&>) mempty $
   fmap (\(c,p) -> (if c == "def" then "" else (c <> ":")) <> construct p) $ tws
+
+-- | This only ever makes sense for edge cases
+-- | 2 is because this is a rank2 HOF 
+renderWhenTWRank2 :: WhenTW a -> (TWCondition -> a -> T.Text) -> T.Text
+renderWhenTWRank2 tws construct = foldr (<&>) mempty $ fmap (\(c,p) -> construct c p) $ tws
+
+-- | Simple Builder 
+twWhenText :: TWCondition -> T.Text -> T.Text
+twWhenText c sty = mkConditionPrefix c <> sty
+
+twWhen :: ShowTW a => TWCondition -> a -> T.Text
+twWhen c sty = mkConditionPrefix c <> showTW sty
+
+--fmap (\(c,p) -> (if c == "def" then "" else (c <> ":")) <> construct c p) $ tws
+mkConditionPrefix :: T.Text -> T.Text 
+mkConditionPrefix c = if c == "def" then "" else (c <> ":")
+
+
 
 compileWhenTW :: WhenTW a -> (a -> T.Text) -> Either T.Text T.Text
 compileWhenTW tws construct = case f $ fmap fst tws of
@@ -1090,6 +1115,8 @@ instance ShowTW TWSize where
       then tshow $ (truncate float :: Int)
       else tshow float
     TWSize_Custom c -> "[" <> renderCSS c <> "]"
+
+type Dimensions = (WhenTW TWSizeOrFraction, WhenTW TWSizeOrFraction)
 
 data TWSizeOrFraction
   = TWSize' TWSize
@@ -1790,6 +1817,17 @@ bc_y = border . bColor . y
 bc_x = border . bColor . x
 bc = border . bColor . allS 
 
+minH, maxH, minW, maxW :: Lens' BoxConfig (WhenTW DimensionConstraint)
+maxW = sizingBand . maxSize . widthC
+minW = sizingBand . minSize . widthC
+maxH = sizingBand . maxSize . heightC
+minH = sizingBand . minSize . heightC 
+
+
+
 
 t_italic :: TextConfigTW -> TextConfigTW 
 t_italic = text_style .~~ Italic
+
+twSize' :: Float -> TWSizeOrFraction
+twSize' = TWSize' . TWSize
