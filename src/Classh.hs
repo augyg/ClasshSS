@@ -80,7 +80,8 @@ tell (w = 9)
 
 -}
 
-
+defaultClasses :: T.Text
+defaultClasses = ""
 
 classh :: CompileStyle s => s -> [(s -> s)] -> Q Exp
 classh base muts = case compileS $ foldl (\acc f -> f acc) base muts of
