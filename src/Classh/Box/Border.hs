@@ -3,8 +3,6 @@
 
 module Classh.Box.Border where
 
--- | TODO: further break down this file
-
 import Classh.Internal.Chain
 import Classh.Internal.TShow
 import Classh.Class.ShowTW
