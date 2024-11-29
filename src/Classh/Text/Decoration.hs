@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Classh.Text.Decoration where
+module Classh.Text.Decoration (module X, module Classh.Text.Decoration) where
 
 import Classh.Class.ShowTW
 import Classh.Responsive.WhenTW
