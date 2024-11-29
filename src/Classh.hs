@@ -24,6 +24,9 @@ import Classh.Class.HasCSSSize as X
 import Classh.Class.HasCustom as X
 import Classh.Class.IsCSS as X
 import Classh.Class.SetSides as X
+import Classh.Internal.Chain as X
+import Classh.Internal.TShow as X
+import Classh.Internal.Utils as X
 
 import Data.Default
 import Language.Haskell.TH
