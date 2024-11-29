@@ -20,7 +20,46 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Classh
+    exposed-modules: Classh
+                     Classh.Box
+                     Classh.Box.Border
+                     Classh.Box.DivInt
+                     Classh.Box.Margin
+                     Classh.Box.Padding
+                     Classh.Box.Placement
+                     Classh.Box.Placement.Align
+                     Classh.Box.Placement.Justify
+                     Classh.Box.Sizing
+                     Classh.Box.TWSize
+                     Classh.Class.CompileStyle
+                     Classh.Class.HasCSSSize
+                     Classh.Class.HasCustom
+                     Classh.Class.IsCSS
+                     Classh.Class.SetSides
+                     Classh.Class.ShowTW
+                     Classh.Color
+                     Classh.Cursor
+                     Classh.Grid
+                     Classh.Internal.CSSSize
+                     Classh.Internal.Chain
+                     Classh.Internal.TShow
+                     Classh.Internal.TWNum
+                     Classh.Internal.Utils
+                     Classh.Responsive.WhenTW
+                     Classh.Responsive.ZipScreens
+                     Classh.Setters
+                     Classh.Shorthand
+                     Classh.Text
+                     Classh.Text.Decoration
+                     Classh.Text.Decoration.LineType
+                     Classh.Text.Decoration.Offset
+                     Classh.Text.Decoration.Style
+                     Classh.Text.Decoration.Thickness
+                     Classh.Text.Font
+                     Classh.Text.FontStyle
+                     Classh.Text.Size
+                     Classh.Text.Weight
+
     -- other-modules:
     -- other-extensions:
     build-depends:    base
