@@ -61,7 +61,7 @@ library
                      Classh.Text.Weight
 
     -- other-modules:
-    other-extensions:
+    default-extensions:
         OverloadedStrings
         TemplateHaskell
         LambdaCase
