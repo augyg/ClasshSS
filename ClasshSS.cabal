@@ -61,7 +61,12 @@ library
                      Classh.Text.Weight
 
     -- other-modules:
-    -- other-extensions:
+    other-extensions:
+        OverloadedStrings
+        TemplateHaskell
+        LambdaCase
+        MultiParamTypeClasses
+        FlexibleContexts
     build-depends:    base
                       --^>=4.15.1.0
                     , data-default
