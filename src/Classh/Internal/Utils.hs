@@ -1,7 +1,6 @@
 module Classh.Internal.Utils where
 
 import Data.Char
---import qualified Data.Text as T
 
 toKebabCase :: String -> String
 toKebabCase [] = []

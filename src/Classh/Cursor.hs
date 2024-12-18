@@ -1,3 +1,24 @@
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh.Cursor
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+--  Types to represent tailwind mouse interactivity
+--  see https://tailwindcss.com/docs/cursor
+--
+--  Example use:
+--
+-- @
+--  $(classh' [ text_cursor .~~ CursorPointer ])
+-- @
+--------------------------------------------------------------------------------
+
+
 module Classh.Cursor where
 
 import Classh.Class.ShowTW
@@ -45,6 +66,7 @@ data CursorStyle
   | CursorZoomOut
   deriving Show
 
+-- | > == CursorDefault
 instance Default CursorStyle where
   def = CursorDefault
 

@@ -1,3 +1,24 @@
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh.Text.Size
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+--  Types to represent tailwind text size options: https://tailwindcss.com/docs/font-size
+--
+--  Example use:
+--
+-- @
+--  $(classh' [ text_size .~~ XL4 ])
+-- @
+--------------------------------------------------------------------------------
+
+
+
 module Classh.Text.Size where
 
 
@@ -28,17 +49,31 @@ instance ShowTW TextSize where
 
 data TextSize
   = XS
+  -- ^ "text-xs"
   | SM
+  -- ^ "text-sm"
   | Base
+  -- ^ "text-base"
   | LG
+  -- ^ "text-lg"
   | XL
+  -- ^ "text-xl"
   | XL2 -- According to testing this is the default size `\_o_/`
+  -- ^ "text-2xl"
   | XL3
+  -- ^ "text-3xl"
   | XL4
+  -- ^ "text-4xl"
   | XL5
+  -- ^ "text-5xl"
   | XL6
+  -- ^ "text-6xl"
   | XL7
+  -- ^ "text-7xl"
   | XL8
+  -- ^ "text-8xl"
   | XL9
+  -- ^ "text-9xl"
   | TextSize_Custom T.Text
+  -- ^ eg. "text-[9px]"
   deriving Show

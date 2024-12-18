@@ -1,7 +1,68 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Classh.Box.Border where
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh.Box.Border
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+--  Types to represent tailwind box's border config of 'BoxConfig'  
+--
+--  Any field named _someField has an associated lens `someField`
+--  see @defaultNameTransform@ from Lens.Family.THCore
+--
+--  This package aims to avoid forcing the user to know lenses
+--
+--  Example use:
+--
+-- @
+--  $(classh' [ border . bWidth . borderWidth_t .~~ B2 ])
+-- @
+--------------------------------------------------------------------------------
+
+module Classh.Box.Border
+  (
+  -- * The Border type 
+    BorderConfig(..)
+  -- * Border Sub-Types
+  , BorderColorSides(..)
+  , BorderRadiusCorners(..)
+  , BorderWidthSides(..)
+  -- * Options
+  , BorderWidth(..)
+  , BorderStyle(..)
+  , BorderRadius'(..)
+  -- * BorderConfig top-level Lenses
+  , radius
+  , bWidth
+  , bStyle
+  , bColor
+  -- * BorderRadius Setters
+  , borderRadius_tr
+  , borderRadius_tl
+  , borderRadius_br
+  , borderRadius_bl
+  , borderRadius_l
+  , borderRadius_r
+  , borderRadius_b
+  , borderRadius_t
+  -- * BorderWidth Setters
+  , borderWidth_r
+  , borderWidth_l
+  , borderWidth_b
+  , borderWidth_t
+  -- * BorderColor Setters
+  , borderColor_t
+  , borderColor_b
+  , borderColor_l
+  , borderColor_r
+
+  ) where
 
 import Classh.Internal.Chain
 import Classh.Internal.TShow
@@ -16,7 +77,13 @@ import Control.Lens hiding ((<&>))
 import Data.Default
 import qualified Data.Text as T
 
-
+--------------------------------------------------------------------------------
+-- |
+-- NOTE: any field named _someField has an associated lens `someField`
+-- see @defaultNameTransform@ from Lens.Family.THCore
+--
+-- This package aims to avoid forcing the user to know lenses
+--------------------------------------------------------------------------------
 
 
 instance Default BorderConfig where
@@ -64,20 +131,45 @@ instance ShowTW BorderConfig where
     , renderWhenTW (_bStyle cfg) ((<>) "border-" . showTW)
     ]
 
+-- | Holds all information about a Box's tailwind border classes
 data BorderConfig = BorderConfig
   { _bStyle :: WhenTW BorderStyle
+  -- ^ https://tailwindcss.com/docs/border-style
   , _bColor :: BorderColorSides
+  -- ^ https://tailwindcss.com/docs/border-color
   , _bWidth :: BorderWidthSides
+  -- ^ https://tailwindcss.com/docs/border-width
   , _radius :: BorderRadiusCorners
+  -- ^ https://tailwindcss.com/docs/border-radius
   } deriving Show
 
+-- |Holds Border 'Color' by side
+-- 
+--  For example:
+-- 
+-- > elClass "div" $(classh' [ border . bColor . borderColor_t .~~ Black ])
+-- > -- Or with shorthand
+-- > elClass "div" $(classh' [ bc_t .~~ Black ])
 data BorderColorSides = BorderColorSides
   { _borderColor_l :: WhenTW Color
+  -- ^ border-l-'Color' ... see https://tailwindcss.com/docs/border-color
   , _borderColor_r :: WhenTW Color
+  -- ^ border-r-'Color' ... see https://tailwindcss.com/docs/border-color
   , _borderColor_t :: WhenTW Color
+  -- ^ border-t-'Color' ... see https://tailwindcss.com/docs/border-color
   , _borderColor_b :: WhenTW Color
+  -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color 
   } deriving Show
 
+
+-- |Holds 'BorderRadius' by corner
+-- see https://tailwindcss.com/docs/border-radius
+-- 
+--  For example:
+-- 
+-- > elClass "div" $(classh' [ border . radius . borderRadius_tr .~~ R_3Xl, border . radius . borderRadius_tl .~~ R_3Xl ])
+-- > -- Or with shorthand
+-- > elClass "div" $(classh' [ br_t .~~ R_3Xl ])
 data BorderRadiusCorners = BorderRadiusCorners
   { _borderRadius_tr :: WhenTW BorderRadius'
   , _borderRadius_tl :: WhenTW BorderRadius'
@@ -85,6 +177,14 @@ data BorderRadiusCorners = BorderRadiusCorners
   , _borderRadius_bl :: WhenTW BorderRadius'
   } deriving Show
 
+-- |Holds 'BorderWidth' by side. 
+--  see https://tailwindcss.com/docs/border-width
+-- 
+--  For example:
+--
+--  > elClass "div" $(classh' [ border . bWidth . borderWidth_t .~~ B2 ])
+--  > -- Or with shorthand
+--  > elClass "div" $(classh' [ bw_t .~~ B2 ])
 data BorderWidthSides = BorderWidthSides
   { _borderWidth_l :: WhenTW BorderWidth
   , _borderWidth_r :: WhenTW BorderWidth
@@ -92,7 +192,9 @@ data BorderWidthSides = BorderWidthSides
   , _borderWidth_b :: WhenTW BorderWidth
   } deriving Show
 
-
+-- | Border Width options, eg. B0 ==> "border-0"
+--
+-- see https://tailwindcss.com/docs/border-width
 data BorderWidth
   = B0
   | B1
@@ -111,7 +213,9 @@ instance ShowTW BorderWidth where
     BW_Custom cssSize -> "-[" <> renderCSS cssSize <> "]"
     other -> "-" <> (T.drop 1 . tshow $ other)
 
-
+-- | Border Style options, eg BSolid ==> "border-solid"
+-- 
+-- see https://tailwindcss.com/docs/border-style
 data BorderStyle
   = BSolid
   | BDashed
@@ -127,7 +231,9 @@ instance Default BorderStyle where
 instance ShowTW BorderStyle where
   showTW = T.toLower . T.drop 1 . tshow
 
-
+-- | Border radius options, eg R_3Xl ==> "rounded-3xl"
+--
+-- see https://tailwindcss.com/docs/border-radius
 data BorderRadius'
   = R_None
   | R_SM
@@ -150,65 +256,12 @@ instance ShowTW BorderRadius' where
     R_Normal -> ""
     other -> "-" <> (T.toLower . T.drop 2 . tshow $ other)
 
-
--- DEPRECATED: use SetSides model
--- | TODO: move to SetSides lens model (t,b,r,l) all valid
-data BorderRadius
-  = None
-  | RoundedSM Corner
-  | Rounded Corner
-  | RoundedMd Corner
-  | RoundedLg Corner
-  | RoundedXl Corner
-  | Rounded2Xl Corner
-  | Rounded3Xl Corner
-  | RoundedFull Corner
-  deriving Show
-
-data Corner
-  = All -- -> ""
-  | S
-  | E
-  | T
-  | R
-  | B
-  | L
-  | SS
-  | SE
-  | EE
-  | ES
-  | TL
-  | TR
-  | BR
-  | BL
-  deriving Show
-
-tshowCorner :: Corner -> T.Text
-tshowCorner = \case
-  All -> ""
-  x -> ((<>) "-") . T.toLower . tshow $ x
-
-instance Default BorderRadius where
-  def = None
-
--- DEPRECATED
-instance ShowTW BorderRadius where
-  showTW = ((<>) "rounded") . \case
-    None -> "-none"
-    Rounded c -> tshowCorner c --"-" <> (T.toLower . tshow $ c) <> "-" <> "sm"
-    RoundedSM c -> tshowCorner c <> "-" <> "sm"
-    RoundedMd c -> tshowCorner c <> "-" <> "md"
-    RoundedLg c -> tshowCorner c <> "-" <> "lg"
-    RoundedXl c -> tshowCorner c <> "-" <> "xl"
-    Rounded2Xl c -> tshowCorner c <> "-" <> "2xl"
-    Rounded3Xl c -> tshowCorner c <> "-" <> "3xl"
-    RoundedFull c -> tshowCorner c <> "-" <> "full"
-
 makeLenses ''BorderRadiusCorners
 makeLenses ''BorderWidthSides
 makeLenses ''BorderColorSides
 makeLenses ''BorderConfig
 
+-- | Like rounded-(t|r|b|l|tl|...)-'BorderRadius'', eg rounded-tl-xl
 instance SetSides BorderRadiusCorners BorderRadius' where
   l = borderRadius_l
   r = borderRadius_r
@@ -223,6 +276,7 @@ instance SetSides BorderRadiusCorners BorderRadius' where
   y = xy
   x = xy
 
+-- | Like border-l-'BorderWidth', eg border-l-8
 instance SetSides BorderWidthSides BorderWidth where
   l = borderWidth_l
   r = borderWidth_r
@@ -236,6 +290,7 @@ instance SetSides BorderWidthSides BorderWidth where
                                            , _borderWidth_r = new
                                            }
 
+-- | Like border-'Color', eg border-white
 instance SetSides BorderColorSides Color where
   l = borderColor_l
   r = borderColor_r

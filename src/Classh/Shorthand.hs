@@ -1,3 +1,32 @@
+{-# LANGUAGE RankNTypes #-}
+
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh.Shorthand
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+--  A collection of shorthand ways to compress the size of tailwind setters.
+--  Almost all are based on the characters used in tailwind. For example, 'pt', 'pb', 'pr',
+--  and 'pl' all exist in tailwind, such as pl-5
+--
+--  If you are just getting started with Classh, I'd recommend reasoning from the 'BoxConfig' type
+--  and 'TextConfigTW' first. 
+--
+--  This package aims to avoid forcing the user to know lenses
+--
+--  Example use:
+--
+-- @
+--  $(classh' [ border . bWidth . borderWidth_t .~~ B2 ])
+-- @
+--------------------------------------------------------------------------------
+
+
 module Classh.Shorthand where
 
 import Classh.Text
@@ -8,8 +37,10 @@ import Classh.Class.SetSides
 import Control.Lens (Lens')
 -- this is purely semantic compression for those familiar with Classh
 
+type Setter a b = Lens' a b
 
-br_r, br_l, br_t, br_b, br_y, br_x, br :: Lens' BoxConfig (WhenTW BorderRadius')
+-- | Set border radius side(s)
+br_r, br_l, br_t, br_b, br_y, br_x, br :: Setter BoxConfig (WhenTW BorderRadius')
 br_r = border . radius . r 
 br_l = border . radius . l
 br_t = border . radius . t
@@ -18,8 +49,8 @@ br_y = border . radius . y
 br_x = border . radius . x
 br = border . radius . allS 
 
-
-bw_r, bw_l, bw_t, bw_b, bw_y, bw_x, bw :: Lens' BoxConfig (WhenTW BorderWidth)
+-- | Set border width side(s)
+bw_r, bw_l, bw_t, bw_b, bw_y, bw_x, bw :: Setter BoxConfig (WhenTW BorderWidth)
 bw_r = border . bWidth . r 
 bw_l = border . bWidth . l
 bw_t = border . bWidth . t
@@ -28,8 +59,8 @@ bw_y = border . bWidth . y
 bw_x = border . bWidth . x
 bw = border . bWidth . allS 
 
-
-bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Lens' BoxConfig (WhenTW Color)
+-- | Set border color side(s)
+bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Setter BoxConfig (WhenTW Color)
 bc_r = border . bColor . r 
 bc_l = border . bColor . l
 bc_t = border . bColor . t
@@ -38,29 +69,38 @@ bc_y = border . bColor . y
 bc_x = border . bColor . x
 bc = border . bColor . allS 
 
+-- | pos == position
+pos :: Setter BoxConfig (WhenTW (Justify, Align))
+pos = position
 
-
--- | If I want to make this not undefined, then I need pos to be an
--- | actual field, which contains Justify and Align as its own record fields
-pos :: Lens' BoxConfig (WhenTW (Justify, Align))
-pos = position --lens undefined $ \cfg new -> cfg { _position =  new }
-
-
--- pos :: Lens' BoxConfig (Justify, Align)
--- pos = position . _Just
-width', height', w, h :: Lens' BoxConfig (WhenTW TWSizeOrFraction)
+-- | Set width
+width' :: Setter BoxConfig (WhenTW TWSizeOrFraction)
 width' = sizingBand . size . width
-height' = sizingBand . size . height
+-- | Set width
+w :: Setter BoxConfig (WhenTW TWSizeOrFraction)
 w = width'
+-- | Set height
+height' :: Setter BoxConfig (WhenTW TWSizeOrFraction)
+height' = sizingBand . size . height
+-- | Set height
+h :: Setter BoxConfig (WhenTW TWSizeOrFraction)
 h = height'
 
-minH, maxH, minW, maxW :: Lens' BoxConfig (WhenTW DimensionConstraint)
+-- | Set BoxConfig max width 
+maxW :: Setter BoxConfig (WhenTW DimensionConstraint)
 maxW = sizingBand . maxSize . widthC
+-- | Set BoxConfig min width
+minW :: Setter BoxConfig (WhenTW DimensionConstraint)
 minW = sizingBand . minSize . widthC
+-- | Set BoxConfig max height
+maxH :: Setter BoxConfig (WhenTW DimensionConstraint)
 maxH = sizingBand . maxSize . heightC
+-- | Set BoxConfig min height
+minH :: Setter BoxConfig (WhenTW DimensionConstraint)
 minH = sizingBand . minSize . heightC 
 
-mt, ml, mr, mb, mx, my, m :: Lens' BoxConfig (WhenTW TWSize)
+-- | Set margin on a given side(s)
+mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW TWSize)
 mt = margin . t
 mb = margin . b
 ml = margin . l
@@ -69,8 +109,8 @@ mx = margin . x
 my = margin . y
 m = margin . allS
 
-
-pt, pl, pr, pb, px, py, p :: Lens' BoxConfig (WhenTW TWSize)
+-- | Set padding on a given side(s)
+pt, pl, pr, pb, px, py, p :: Setter BoxConfig (WhenTW TWSize)
 pt = padding . t
 pb = padding . b
 pl = padding . l
@@ -79,5 +119,7 @@ px = padding . x
 py = padding . y
 p = padding . allS
 
+-- TODO: move to Classh.Constants
+-- | Set text to italic 
 t_italic :: TextConfigTW -> TextConfigTW 
 t_italic = text_style .~~ Italic

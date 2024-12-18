@@ -1,8 +1,36 @@
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh.Responsive.WhenTW 
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+--  The workhorse type to represent responsive and user events
+--
+--  Example use:
+--
+-- @
+--  $(classh' [ colSpan .~ [("def",1), ("sm", 2), ("md",3), ("lg",4), ("hover",10) ] ])
+--  -- shortened:
+--  $(classh' [ colSpan .|~ [1,2,3,4], colSpan .~+ ("hover",10) ])
+--  -- because (.|~) and (.|+) produce and set a WhenTW based on 'zipScreens' 
+-- @
+--------------------------------------------------------------------------------
+
 module Classh.Responsive.WhenTW where
 
 import Classh.Internal.Chain
 import Classh.Class.ShowTW
 import qualified Data.Text as T
+
+
+type TWCondition = T.Text
+type WhenTW a = [(TWCondition, a)]
+newtype WhenTW' a = WhenTW' { unWhenTW :: [(TWCondition, a)] }
+
 
 compileWhenTW :: WhenTW a -> (a -> T.Text) -> Either T.Text T.Text
 compileWhenTW tws construct = case f $ fmap fst tws of
@@ -34,10 +62,6 @@ twWhen c sty = mkConditionPrefix c <> showTW sty
 --fmap (\(c,p) -> (if c == "def" then "" else (c <> ":")) <> construct c p) $ tws
 mkConditionPrefix :: T.Text -> T.Text 
 mkConditionPrefix c = if c == "def" then "" else (c <> ":")
-
-type TWCondition = T.Text
-type WhenTW a = [(TWCondition, a)]
-newtype WhenTW' a = WhenTW' { unWhenTW :: [(TWCondition, a)] }
 
 -- Useful for when you want config relative to another one.
 -- eg. width2 = width1 + 1px

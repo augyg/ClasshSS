@@ -3,7 +3,17 @@ name:               ClasshSS
 version:            0.1.0.0
 synopsis:
         Typified Tailwind for Rapid Development
--- description:
+description:
+  This package is a type-safe layer on top of Tailwind Classes
+  to allow someone to treat the compiler like a lookup machine and ensure that no time will
+  be wasted trying to fix typos in tailwind strings
+
+  Originally this was meant to also provide a way to typify CSS but Tailwind provides such a nice
+  abstraction on top of CSS and provides logical custom values that it made more sense to build
+  entirely on top of Tailwind.
+
+  It is not meant to be an exact 1 to 1 translation of Tailwind but rather an interface that
+  aims to reduce the number of ways to do the same thing, in the effort to reduce spooky CSS behavior
 homepage:           https://github.com/augyg/ClasshSS
 license:            MIT
 license-file:       LICENSE
@@ -29,8 +39,11 @@ library
                      Classh.Box.Placement
                      Classh.Box.Placement.Align
                      Classh.Box.Placement.Justify
-                     Classh.Box.Sizing
                      Classh.Box.TWSize
+                     Classh.Box.SizingBand
+                     Classh.Box.Sizing.BoxSizingConstraint
+                     Classh.Box.Sizing.BoxSizing
+                     Classh.Box.Sizing.DimensionConstraint
                      Classh.Class.CompileStyle
                      Classh.Class.HasCSSSize
                      Classh.Class.HasCustom
@@ -60,7 +73,6 @@ library
                      Classh.Text.Size
                      Classh.Text.Weight
 
-    -- other-modules:
     default-extensions:
         OverloadedStrings
         TemplateHaskell
@@ -78,5 +90,5 @@ library
                     , text
                       -->= 1.2.5 && < 1.3
     hs-source-dirs:   src
-    ghc-options:  -Wno-name-shadowing
+    ghc-options: -Wall -Werror -O -threaded -fno-show-valid-hole-fits
     default-language: Haskell2010

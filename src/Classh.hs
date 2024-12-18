@@ -4,7 +4,83 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Classh (module X, module Classh) where
+--------------------------------------------------------------------------------
+-- |
+--  Module      :  Classh
+--  Copyright   :  (c) 2024, Galen Sprout
+--  License     :  BSD-style (see end of this file)
+--
+--  Maintainer  :  Galen Sprout <galen.sprout@gmail.com>
+--  Stability   :  provisional
+--  Portability :  portable
+--
+-- This module exports all modules in the ClasshSS package
+--
+-- The majority of classes in Tailwind are either to handle
+-- 1) Elements/Boxes
+-- 2) Text
+--
+-- That said, here is a common real example creating a box with some text in it, using reflex-dom to illustrate
+--
+-- > elClass "div" $(classh' [ padding . t .~~ pix 20, bgColor .~~ Gray C300 ]) $ do
+-- >    textS $(classh' [text_size .|~ [XL,XL2]]) "Hey"
+--
+-- Using Classh.Shorthand functions we can make this more ergonomic/take up less space
+--
+-- for example
+-- 
+-- > padding . t == pt
+--
+-- The above divs we have created ensure there is no 'classhes'. For example, if we set the top padding but also the
+-- y-padding then it will complain at compile time. Hence, the `$(..)` Template Haskell syntax. You can avoid this by
+-- using classhUnsafe without this TH syntax
+--
+-- `classh'` is used twice in our example, once for the div/box and once for Text as its based on the
+-- CompileStyle type class which simply allows us to apply mutations to a base 'config'. When we use classh'
+-- we use the default value for this type (see Data.Default) however we can use `classh` to pass in a default here
+-- instead:
+--
+-- > $(classh myBaseTextConfig [text_size .|~ [XL,XL2]])
+--
+-- Here we use the text_size lens to set the _text_size field. to XL and XL2 which are of the type TextSize
+-- We have also set these properties in two different ways here
+-- 
+-- > 1) (.|~)
+-- > 2) (.~~)
+--
+-- .|~ takes a list that goes from mobile (less than 640px) -> sm -> md -> lg -> xl -> 2xl (eg. padding) 
+-- .~~ takes a singular value for all screen sizes (eg. background color / bgColor) 
+-- The reason is because almost all properties are (WhenTW prop) which is a list of values by screen size 
+-- this is based on https://tailwindcss.com/docs/responsive-design
+--
+-- We also have
+-- 
+-- > (.~)
+-- > -- which is mainly used for `custom` as the associated Record field is not a WhenTW but a String. this is just a simple setter
+--
+-- > (.~+)
+-- > -- appends the chosen value to what exists (perhaps in a default config)
+-- 
+-- > (.|+)
+-- > -- like .|~ except that it adds to what already exists (perhaps in a default config)
+--------------------------------------------------------------------------------
+
+module Classh
+  ( 
+  -- * Write class string 
+     classh
+  , classh'
+  , classhUnsafe
+  , boxCSS
+  -- * Re-Exports
+  , module X
+  -- * Extend
+  , alsoF
+  , also
+  , applyFs 
+  -- * Deprecated
+  , defaultClasses
+  ) where
 
 -- import Classh.Border
 -- import Classh.ShowTW
@@ -31,6 +107,10 @@ import Classh.Internal.Utils as X
 import Data.Default
 import Language.Haskell.TH
 import qualified Data.Text as T
+
+
+
+
 
 
 {-
@@ -83,25 +163,32 @@ tell (w = 9)
 defaultClasses :: T.Text
 defaultClasses = ""
 
+-- | Apply mutations to BoxConfig or TextConfigTW at compile time with a default
+-- > $(classh def' [ bgColor .~~ Black ]) :: Text
+-- > $(classh def' [ text_color .~~ Black ]) :: Text
 classh :: CompileStyle s => s -> [(s -> s)] -> Q Exp
 classh base muts = case compileS $ foldl (\acc f -> f acc) base muts of
   Left e -> fail $ T.unpack e
   Right styleString -> [| styleString |]
 
+-- | Apply mutations to BoxConfig or TextConfigTW at compile time 
+-- > $(classh' [ bgColor .~~ Black ]) :: Text
+-- > $(classh' [ text_color .~~ Black ]) :: Text
 classh' :: (Default s, CompileStyle s) => [(s -> s)] -> Q Exp
 classh' muts = case compileS $ foldl (\acc f -> f acc) def muts of
   Left e -> fail $ T.unpack e
   Right styleString -> [| styleString |]
 
 -- | Doesn't use TemplateHaskell, this is meant for making lib functions since we need args
--- | from outside the would-be TH context
+-- from outside the would-be TH context
+-- > (classhUnsafe [ bgColor .~~ Black ])
+-- > (classhUnsafe [ text_color .~~ Black ])
 classhUnsafe :: (Default a, ShowTW a) => [a -> a] -> T.Text
 classhUnsafe muts = showTW $ def `applyFs` muts
 
--- | Util for dealing with existing, complex and masive CSS strings but adding on in Classh DSL
+-- | Synonym to showTW
 boxCSS :: BoxConfig -> T.Text
 boxCSS = showTW 
-
 
 alsoF :: T.Text -> [BoxConfig -> BoxConfig] -> T.Text
 alsoF s cfgMuts = s <> boxCSS (def `applyFs` cfgMuts) 
@@ -110,7 +197,7 @@ also :: T.Text -> BoxConfig -> T.Text
 also s cfg = s <> boxCSS cfg
 
 applyFs :: a -> [a -> a] -> a
-applyFs b fs = foldl (\acc f -> f acc) b fs
+applyFs in_ fs = foldl (\acc f -> f acc) in_ fs
 
 
 
