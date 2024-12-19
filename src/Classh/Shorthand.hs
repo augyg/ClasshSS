@@ -123,3 +123,29 @@ p = padding . allS
 -- | Set text to italic 
 t_italic :: TextConfigTW -> TextConfigTW 
 t_italic = text_style .~~ Italic
+
+denom12, denom6, denom5, denom4, denom3, denom2 :: Int -> TWSizeOrFraction
+denom12 = div12
+denom6 = div6
+denom5 = div5
+denom4 = div4
+denom3 = div3
+denom2 = div2
+
+div12 :: Int -> TWSizeOrFraction
+div12 = flip TWFraction D12
+
+div6 :: Int -> TWSizeOrFraction
+div6 = flip TWFraction D6
+
+div5 :: Int -> TWSizeOrFraction
+div5 = flip TWFraction D5
+
+div4 :: Int -> TWSizeOrFraction
+div4 = flip TWFraction D4
+
+div3 :: Int -> TWSizeOrFraction
+div3 = flip TWFraction D3
+
+div2 :: Int -> TWSizeOrFraction
+div2 = flip TWFraction D2
