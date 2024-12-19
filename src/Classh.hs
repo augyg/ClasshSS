@@ -77,7 +77,9 @@ module Classh
   -- * Extend
   , alsoF
   , also
-  , applyFs 
+  , applyFs
+  -- * Group classes together
+  , ClassCollection(..)
   -- * Deprecated
   , defaultClasses
   ) where
@@ -199,7 +201,7 @@ also s cfg = s <> boxCSS cfg
 applyFs :: a -> [a -> a] -> a
 applyFs in_ fs = foldl (\acc f -> f acc) in_ fs
 
-
+newtype ClassCollection tw = ClassCollection { getCollection :: [tw -> tw] }
 
 -- END OF MODULE 
 
