@@ -71,6 +71,8 @@ module Classh
      classh
   , classh'
   , classhUnsafe
+  , classhV
+  , classhV'
   , boxCSS
   -- * Re-Exports
   , module X
@@ -89,6 +91,7 @@ module Classh
 -- import Classh.WhenTW
 import Classh.Box as X
 import Classh.Text as X
+import Classh.TextPosition as X
 import Classh.Grid as X
 --import Classh.Cursor as X
 --import Classh.Color as X
@@ -187,6 +190,14 @@ classh' muts = case compileS $ foldl (\acc f -> f acc) def muts of
 -- > (classhUnsafe [ text_color .~~ Black ])
 classhUnsafe :: (Default a, ShowTW a) => [a -> a] -> T.Text
 classhUnsafe muts = showTW $ def `applyFs` muts
+
+--classhV, classhV' :: Q Exp
+classhV :: (CompileStyle a) => a -> (a -> a) -> Q Exp
+classhV base transform = classh base [transform]
+
+classhV' :: (Default a, CompileStyle a) => (a -> a) -> Q Exp
+classhV' transform = classh' [transform]
+
 
 -- | Synonym to showTW
 boxCSS :: BoxConfig -> T.Text

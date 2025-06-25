@@ -41,6 +41,13 @@ import Classh.Box.TWSize
 import Data.Default
 import Control.Lens (makeLenses)
 
+-- | Holds information on target sizing, which will be overrided by constraints
+data BoxSizing = BoxSizing
+  { _width :: WhenTW TWSizeOrFraction
+  , _height :: WhenTW TWSizeOrFraction
+  }
+  deriving Show
+
 -- | > == BoxSizing TWSize_Auto TWSize_Auto
 instance Default BoxSizing where
   def = BoxSizing def def
@@ -51,11 +58,10 @@ instance ShowTW BoxSizing where
     , renderWhenTW (_height cfg) ((<>) "h-" . showTW)
     ]
 
--- | Holds information on target sizing, which will be overrided by constraints
-data BoxSizing = BoxSizing
-  { _width :: WhenTW TWSizeOrFraction
-  , _height :: WhenTW TWSizeOrFraction
-  }
-  deriving Show
-
 makeLenses ''BoxSizing
+
+instance Semigroup BoxSizing where
+  (<>) a b = BoxSizing
+    { _width  = _width a <> _width b
+    , _height = _height a <> _height b
+    }

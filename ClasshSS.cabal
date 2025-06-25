@@ -72,6 +72,23 @@ library
                      Classh.Text.FontStyle
                      Classh.Text.Size
                      Classh.Text.Weight
+                     Classh.Box.Border.Color
+                     Classh.Box.Border.Radius
+                     Classh.Box.Border.Style
+                     Classh.Box.Border.Width
+                     Classh.TextPosition
+                     Classh.TextPosition.Clamp
+                     Classh.TextPosition.Content
+                     Classh.TextPosition.Hyphen
+                     Classh.TextPosition.Lead
+                     Classh.TextPosition.TAlign
+                     Classh.TextPosition.TOverflow
+                     Classh.TextPosition.Track
+                     Classh.TextPosition.VAlign
+                     Classh.TextPosition.WhiteSpace
+                     Classh.TextPosition.WordBreak
+                     Classh.TextPosition.Wrap
+                     
 
     default-extensions:
         OverloadedStrings

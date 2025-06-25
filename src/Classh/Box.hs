@@ -211,3 +211,17 @@ instance ShowTW BoxConfig where
 
 instance HasCustom BoxConfig where
   custom = box_custom
+
+instance Semigroup BoxConfig where
+  (<>) a b = BoxConfig
+    { _colStart   = _colStart a <> _colStart b
+    , _colSpan    = _colSpan a  <> _colSpan b
+    , _bgColor    = _bgColor a  <> _bgColor b
+    , _bgOpacity  = _bgOpacity a <> _bgOpacity b
+    , _padding    = _padding a  <> _padding b
+    , _margin     = _margin a   <> _margin b
+    , _sizingBand = _sizingBand a <> _sizingBand b
+    , _border     = _border a   <> _border b
+    , _position   = _position a <> _position b
+    , _box_custom = _box_custom a <> _box_custom b
+    }

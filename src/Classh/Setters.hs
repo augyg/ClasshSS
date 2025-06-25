@@ -63,6 +63,18 @@ infixr 4 .|+
 (.|+) :: ASetter s t (WhenTW a) (WhenTW a) -> [a] -> s -> t
 someLens .|+ newVals = over someLens (++ (zipScreens newVals))
 
+
+
+-- | Both are functions from Classh with changed infix precedence to work with <> 
+infixr 7 .- 
+(.-) :: ASetter s t b (WhenTW a) -> a -> s -> t
+someLens .- newVals = over someLens (const $ only newVals)
+
+infixr 7 .|<~
+(.|<~) :: ASetter s t b (WhenTW a) -> [a] -> s -> t
+someLens .|<~ newVals = over someLens (const $ zipScreens newVals)
+
+
 -- .:|
 
 --   4 .:| 5 .:|

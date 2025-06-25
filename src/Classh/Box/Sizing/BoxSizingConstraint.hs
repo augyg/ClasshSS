@@ -48,3 +48,10 @@ data BoxSizingConstraint = BoxSizingConstraint
   deriving Show
 
 makeLenses ''BoxSizingConstraint
+
+
+instance Semigroup BoxSizingConstraint where
+  (<>) a b = BoxSizingConstraint
+    { _widthC  = _widthC a <> _widthC b
+    , _heightC = _heightC a <> _heightC b
+    }

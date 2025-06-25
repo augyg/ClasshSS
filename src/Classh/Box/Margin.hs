@@ -78,6 +78,14 @@ data BoxMargin = BoxMargin
 
 makeLenses ''BoxMargin
 
+instance Semigroup BoxMargin where
+  (<>) a_ b_ = BoxMargin
+    { _marginL = _marginL a_ <> _marginL b_
+    , _marginR = _marginR a_ <> _marginR b_
+    , _marginT = _marginT a_ <> _marginT b_
+    , _marginB = _marginB a_ <> _marginB b_
+    }
+
 -- | This is technically an illegal lens however if you ran 2 setters which overlap so that a /= b
 -- | where a and b are the fields associated with respective separate fields, then classh' will
 -- | most likely catch the error. Additionally, there is a lens way to access any field anyways

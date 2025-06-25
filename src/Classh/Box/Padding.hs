@@ -96,6 +96,13 @@ data BoxPadding = BoxPadding
 
 makeLenses ''BoxPadding
 
+instance Semigroup BoxPadding where
+  (<>) a_ b_ = BoxPadding
+    { _paddingL = _paddingL a_ <> _paddingL b_
+    , _paddingR = _paddingR a_ <> _paddingR b_
+    , _paddingT = _paddingT a_ <> _paddingT b_
+    , _paddingB = _paddingB a_ <> _paddingB b_
+    }
 
 -- | This is technically an illegal lens however if you ran 2 setters which overlap so that a /= b
 -- | where a and b are the fields associated with respective separate fields, then classh' will
@@ -112,4 +119,5 @@ instance SetSides BoxPadding TWSize where
                                       , _paddingL = new
                                       , _paddingR = new
                                       }
+
 

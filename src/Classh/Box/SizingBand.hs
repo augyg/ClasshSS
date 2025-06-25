@@ -85,3 +85,10 @@ type Dimensions = (WhenTW TWSizeOrFraction, WhenTW TWSizeOrFraction)
 
 makeLenses ''BoxSizingBand
 
+
+instance Semigroup BoxSizingBand where
+  (<>) a b = BoxSizingBand
+    { _maxSize = _maxSize a <> _maxSize b
+    , _minSize = _minSize a <> _minSize b
+    , _size    = _size a <> _size b  -- right-biased override
+    }
