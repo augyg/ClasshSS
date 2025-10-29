@@ -28,7 +28,7 @@
 -- Using Classh.Shorthand functions we can make this more ergonomic/take up less space
 --
 -- for example
--- 
+--
 -- > padding . t == pt
 --
 -- The above divs we have created ensure there is no 'classhes'. For example, if we set the top padding but also the
@@ -44,30 +44,30 @@
 --
 -- Here we use the text_size lens to set the _text_size field. to XL and XL2 which are of the type TextSize
 -- We have also set these properties in two different ways here
--- 
+--
 -- > 1) (.|~)
 -- > 2) (.~~)
 --
--- .|~ takes a list that goes from mobile (less than 640px) -> sm -> md -> lg -> xl -> 2xl (eg. padding) 
--- .~~ takes a singular value for all screen sizes (eg. background color / bgColor) 
--- The reason is because almost all properties are (WhenTW prop) which is a list of values by screen size 
+-- .|~ takes a list that goes from mobile (less than 640px) -> sm -> md -> lg -> xl -> 2xl (eg. padding)
+-- .~~ takes a singular value for all screen sizes (eg. background color / bgColor)
+-- The reason is because almost all properties are (WhenTW prop) which is a list of values by screen size
 -- this is based on https://tailwindcss.com/docs/responsive-design
 --
 -- We also have
--- 
+--
 -- > (.~)
 -- > -- which is mainly used for `custom` as the associated Record field is not a WhenTW but a String. this is just a simple setter
 --
 -- > (.~+)
 -- > -- appends the chosen value to what exists (perhaps in a default config)
--- 
+--
 -- > (.|+)
 -- > -- like .|~ except that it adds to what already exists (perhaps in a default config)
 --------------------------------------------------------------------------------
 
 module Classh
-  ( 
-  -- * Write class string 
+  (
+  -- * Write class string
      classh
   , classh'
   , classhUnsafe
@@ -151,9 +151,9 @@ Items }} Box }} GridLayout
 
 Items: text, images, image content, radiobutton<--with-->label
 Box: components, which contain items
-GridLayout: Highly variably-sized element with tons of purposeful white-space 
+GridLayout: Highly variably-sized element with tons of purposeful white-space
 
-widthTotal <- element widthTotal $ do 
+widthTotal <- element widthTotal $ do
   mkItem (w = 9)
   mkItem (w = 9)
 
@@ -176,7 +176,7 @@ classh base muts = case compileS $ foldl (\acc f -> f acc) base muts of
   Left e -> fail $ T.unpack e
   Right styleString -> [| styleString |]
 
--- | Apply mutations to BoxConfig or TextConfigTW at compile time 
+-- | Apply mutations to BoxConfig or TextConfigTW at compile time
 -- > $(classh' [ bgColor .~~ Black ]) :: Text
 -- > $(classh' [ text_color .~~ Black ]) :: Text
 classh' :: (Default s, CompileStyle s) => [(s -> s)] -> Q Exp
@@ -201,10 +201,10 @@ classhV' transform = classh' [transform]
 
 -- | Synonym to showTW
 boxCSS :: BoxConfig -> T.Text
-boxCSS = showTW 
+boxCSS = showTW
 
 alsoF :: T.Text -> [BoxConfig -> BoxConfig] -> T.Text
-alsoF s cfgMuts = s <> boxCSS (def `applyFs` cfgMuts) 
+alsoF s cfgMuts = s <> boxCSS (def `applyFs` cfgMuts)
 
 also :: T.Text -> BoxConfig -> T.Text
 also s cfg = s <> boxCSS cfg
@@ -214,7 +214,7 @@ applyFs in_ fs = foldl (\acc f -> f acc) in_ fs
 
 newtype ClassCollection tw = ClassCollection { getCollection :: [tw -> tw] }
 
--- END OF MODULE 
+-- END OF MODULE
 
 
 
@@ -330,4 +330,3 @@ newtype ClassCollection tw = ClassCollection { getCollection :: [tw -> tw] }
 --   | IG10
 --   | IG11
 --   | IG12
-
