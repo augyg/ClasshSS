@@ -84,6 +84,10 @@ module Classh
   , ClassCollection(..)
   -- * Deprecated
   , defaultClasses
+  -- * Documenting types
+  , Compiled
+  , Expression
+  , CompiledClassh
   ) where
 
 -- import Classh.Border
@@ -164,6 +168,11 @@ mkItem :: WriterT WidthTotal
 tell (w = 9)
 
 -}
+
+type Compiled = Q
+type Expression = Exp
+type CompiledClassh = Compiled Expression
+
 
 defaultClasses :: T.Text
 defaultClasses = ""
