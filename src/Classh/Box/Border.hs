@@ -26,8 +26,8 @@
 --------------------------------------------------------------------------------
 
 module Classh.Box.Border
-  ( module X 
-  -- * The Border type 
+  ( module X
+  -- * The Border type
   , BorderConfig(..)
   -- * Border Sub-Types
   , BorderColorSides(..)
@@ -42,12 +42,16 @@ module Classh.Box.Border
   , bWidth
   , bStyle
   , bColor
+  , ring
+  , outline
   ) where
 
 import Classh.Box.Border.Style as X
 import Classh.Box.Border.Width as X
 import Classh.Box.Border.Color as X
 import Classh.Box.Border.Radius as X
+import Classh.Box.Ring as X
+import Classh.Box.Outline as X
 
 import Classh.Internal.Chain
 import Classh.Class.ShowTW
@@ -75,11 +79,15 @@ data BorderConfig = BorderConfig
   -- ^ https://tailwindcss.com/docs/border-width
   , _radius :: BorderRadiusCorners
   -- ^ https://tailwindcss.com/docs/border-radius
+  , _ring :: RingConfig
+  -- ^ https://v3.tailwindcss.com/docs/ring-width
+  , _outline :: WhenTW OutlineStyle
+  -- ^ https://v3.tailwindcss.com/docs/outline-style
   } deriving Show
 
 
 instance Default BorderConfig where
-  def = BorderConfig def def def def
+  def = BorderConfig def def def def def def
  
 instance ShowTW BorderConfig where
   showTW cfg = foldr (<&>) mempty
@@ -87,6 +95,8 @@ instance ShowTW BorderConfig where
     , showTW . _bWidth $ cfg
     , showTW . _bColor $ cfg
     , renderWhenTW (_bStyle cfg) ((<>) "border-" . showTW)
+    , showTW . _ring $ cfg
+    , renderWhenTW (_outline cfg) showTW
     ]
 
 makeLenses ''BorderConfig
@@ -97,4 +107,6 @@ instance Semigroup BorderConfig where
     , _bColor = _bColor a <> _bColor b
     , _bWidth = _bWidth a <> _bWidth b
     , _radius = _radius a <> _radius b
+    , _ring = _ring a <> _ring b
+    , _outline = _outline a <> _outline b
     }

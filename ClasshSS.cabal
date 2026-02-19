@@ -39,7 +39,10 @@ library
                      Classh.Box.Placement
                      Classh.Box.Placement.Align
                      Classh.Box.Placement.Justify
+                     Classh.Box.Outline
+                     Classh.Box.Ring
                      Classh.Box.Shadow
+                     Classh.Box.Transform
                      Classh.Box.TWSize
                      Classh.Box.SizingBand
                      Classh.Box.Transition

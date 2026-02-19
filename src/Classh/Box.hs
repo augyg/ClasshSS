@@ -142,6 +142,8 @@ instance CompileStyle BoxConfig where
           , compileBorderRadius (_radius cfg')
           , compileBorderWidth (_bWidth cfg')
           , compileBorderColor (_bColor cfg')
+          , compileRing (_ring cfg')
+          , compileWhenTW (_outline cfg') showTW
           ]
 
         compileBorderRadius cfg' = pure . foldr (<&>) mempty =<< sequenceA
@@ -163,6 +165,12 @@ instance CompileStyle BoxConfig where
           , compileWhenTW (_borderColor_r cfg') ((<>) "border-r-" . showTW)
           , compileWhenTW (_borderColor_t cfg') ((<>) "border-t-" . showTW)
           , compileWhenTW (_borderColor_b cfg') ((<>) "border-b-" . showTW)
+          ]
+
+        compileRing cfg' = pure . foldr (<&>) mempty =<< sequenceA
+          [ compileWhenTW (_ringWidth cfg') showTW
+          , compileWhenTW (_ringColor cfg') ((<>) "ring-" . showTW)
+          , compileWhenTW (_ringOpacity cfg') ((<>) "ring-opacity-" . tshow)
           ]
 
         compileSizingBand cfg' = pure . foldr (<&>) mempty =<< sequenceA
