@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 --------------------------------------------------------------------------------
 -- |
@@ -32,6 +33,8 @@ import Classh.Internal.TShow
 import Classh.Internal.Chain
 import Classh.Responsive.WhenTW
 import Classh.Color
+import Classh.WithTransition
+import Classh.Box.Transition (TransitionProperty(..))
 import Control.Lens (makeLenses)
 import Data.Default
 import qualified Data.Text as T
@@ -48,11 +51,11 @@ data RingWidth
   | Ring_Inset
   deriving Show
 
--- | Ring configuration
+-- | Ring configuration (transitionable)
 data RingConfig = RingConfig
-  { _ringWidth :: WhenTW RingWidth
-  , _ringColor :: WhenTW Color
-  , _ringOpacity :: WhenTW Int  -- 0-100
+  { _ringWidth :: WhenTW (WithTransition RingWidth)
+  , _ringColor :: WhenTW (WithTransition Color)
+  , _ringOpacity :: WhenTW (WithTransition Int)  -- 0-100
   } deriving Show
 
 makeLenses ''RingConfig
@@ -72,9 +75,9 @@ instance Default RingConfig where
 
 instance ShowTW RingConfig where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_ringWidth cfg) showTW
-    , renderWhenTW (_ringColor cfg) ((<>) "ring-" . showTW)
-    , renderWhenTW (_ringOpacity cfg) ((<>) "ring-opacity-" . tshow)
+    [ renderWithTransitionTW (_ringWidth cfg) showTW Transition_All
+    , renderWithTransitionTW (_ringColor cfg) ((<>) "ring-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_ringOpacity cfg) ((<>) "ring-opacity-" . tshow) Transition_Opacity
     ]
 
 instance Semigroup RingConfig where
