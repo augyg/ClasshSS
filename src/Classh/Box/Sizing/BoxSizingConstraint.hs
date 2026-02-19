@@ -34,6 +34,7 @@ module Classh.Box.Sizing.BoxSizingConstraint
 
 import Classh.Box.Sizing.DimensionConstraint as X
 import Classh.Responsive.WhenTW
+import Classh.WithTransition
 import Control.Lens (makeLenses)
 import Data.Default
 
@@ -42,8 +43,8 @@ instance Default BoxSizingConstraint where
   def = BoxSizingConstraint def def
 
 data BoxSizingConstraint = BoxSizingConstraint
-  { _widthC :: WhenTW DimensionConstraint
-  , _heightC :: WhenTW DimensionConstraint
+  { _widthC :: WhenTW (WithTransition DimensionConstraint)
+  , _heightC :: WhenTW (WithTransition DimensionConstraint)
   }
   deriving Show
 

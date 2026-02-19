@@ -49,6 +49,8 @@ import Classh.Class.ShowTW
 import Classh.Responsive.WhenTW
 import Classh.Internal.Chain
 import Classh.Responsive.ZipScreens
+import Classh.WithTransition
+import Classh.Box.Transition (TransitionProperty(..))
 
 import Classh.Box.TWSize as X
 
@@ -56,15 +58,15 @@ import Control.Lens (makeLenses)
 import Data.Default
 
 -- move to shorthand?
-fitToContents :: (WhenTW TWSizeOrFraction, WhenTW TWSizeOrFraction)
-fitToContents = (only TWSize_Fit, only TWSize_Fit)
+fitToContents :: (WhenTW (WithTransition TWSizeOrFraction), WhenTW (WithTransition TWSizeOrFraction))
+fitToContents = (only (WithTransition TWSize_Fit Nothing), only (WithTransition TWSize_Fit Nothing))
 
 instance ShowTW BoxSizingBand where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_widthC . _maxSize $ cfg) ((<>) "max-w-" . showTW)
-    , renderWhenTW (_heightC . _maxSize $ cfg) ((<>) "max-h-" . showTW)
-    , renderWhenTW (_widthC . _minSize $ cfg) ((<>) "min-w-" . showTW)
-    , renderWhenTW (_heightC . _minSize $ cfg) ((<>) "min-h-" . showTW)
+    [ renderWithTransitionTW (_widthC . _maxSize $ cfg) ((<>) "max-w-" . showTW) Transition_All
+    , renderWithTransitionTW (_heightC . _maxSize $ cfg) ((<>) "max-h-" . showTW) Transition_All
+    , renderWithTransitionTW (_widthC . _minSize $ cfg) ((<>) "min-w-" . showTW) Transition_All
+    , renderWithTransitionTW (_heightC . _minSize $ cfg) ((<>) "min-h-" . showTW) Transition_All
     , showTW $ _size cfg
     ]
 
