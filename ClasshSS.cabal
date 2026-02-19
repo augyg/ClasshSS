@@ -93,7 +93,8 @@ library
                      Classh.TextPosition.WhiteSpace
                      Classh.TextPosition.WordBreak
                      Classh.TextPosition.Wrap
-                     
+                     Classh.WithTransition
+
 
     default-extensions:
         OverloadedStrings
