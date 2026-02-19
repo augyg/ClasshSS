@@ -39,8 +39,10 @@ library
                      Classh.Box.Placement
                      Classh.Box.Placement.Align
                      Classh.Box.Placement.Justify
+                     Classh.Box.Shadow
                      Classh.Box.TWSize
                      Classh.Box.SizingBand
+                     Classh.Box.Transition
                      Classh.Box.Sizing.BoxSizingConstraint
                      Classh.Box.Sizing.BoxSizing
                      Classh.Box.Sizing.DimensionConstraint
@@ -96,6 +98,7 @@ library
         LambdaCase
         MultiParamTypeClasses
         FlexibleContexts
+        PackageImports
     build-depends:    base
                       --^>=4.15.1.0
                     , data-default

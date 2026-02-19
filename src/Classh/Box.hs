@@ -65,7 +65,9 @@ module Classh.Box
   , sizingBand
   , border
   , position
-  , box_custom 
+  , shadow
+  , transition
+  , box_custom
   ) where
 
 -- Our goto module
@@ -84,6 +86,8 @@ import Classh.Box.Margin as X
 import Classh.Box.SizingBand as X
 import Classh.Box.Placement as X
 import Classh.Box.Border as X
+import Classh.Box.Shadow as X
+import Classh.Box.Transition as X
 
 import Control.Lens hiding ((<&>))
 import Data.Default
@@ -99,6 +103,8 @@ data BoxConfig = BoxConfig
   , _sizingBand :: BoxSizingBand
   , _border :: BorderConfig -- { rounded, thickness, etc .. }
   , _position :: WhenTW (Justify, Align)
+  , _shadow :: WhenTW BoxShadow
+  , _transition :: TransitionConfig
   --, _text_align :: Align ... or should we set == position.align
   , _box_custom :: T.Text
   }
@@ -111,7 +117,7 @@ makeLenses ''BoxConfig
 ------------  Defaults of Records
 
 instance Default BoxConfig where
-  def = BoxConfig def def def def def def def def def ""
+  def = BoxConfig def def def def def def def def def def def ""
 
 
 instance CompileStyle BoxConfig where
@@ -126,6 +132,8 @@ instance CompileStyle BoxConfig where
       , compileMargin (_margin cfg)
       , compileWhenTW (_bgColor cfg) ((<>) "bg-" . showTW)
       , compileWhenTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow)
+      , compileWhenTW (_shadow cfg) showTW
+      , compileTransition (_transition cfg)
       , Right $ _box_custom cfg
       ]
       where
@@ -174,6 +182,13 @@ instance CompileStyle BoxConfig where
           , compileWhenTW (_marginB cfg') ((<>) "mb-" . showTW)
           ]
 
+        compileTransition cfg' = pure . foldr (<&>) mempty =<< sequenceA
+          [ compileWhenTW (_transitionProperty cfg') showTW
+          , compileWhenTW (_transitionDuration cfg') showTW
+          , compileWhenTW (_transitionTiming cfg') showTW
+          , compileWhenTW (_transitionDelay cfg') showTW
+          ]
+
         compilePos posCfg = case f $ fmap fst posCfg of
           Left e -> Left e
           Right () -> Right $ foldr (<&>) mempty $ fmap
@@ -205,6 +220,8 @@ instance ShowTW BoxConfig where
         let prefix = if c == "def" then "" else (c <> ":")
         in prefix <> "grid" <&> prefix <> (showTW jus) <&> prefix <> (showTW align)
      ) $ _position cfg
+   , renderWhenTW (_shadow cfg) showTW
+   , showTW . _transition $ cfg
    --, renderWhenTW (_position cfg) $ \(j,a) -> "grid " <> showTW j <> " " <> showTW a
    , _box_custom cfg
    ]
@@ -223,5 +240,7 @@ instance Semigroup BoxConfig where
     , _sizingBand = _sizingBand a <> _sizingBand b
     , _border     = _border a   <> _border b
     , _position   = _position a <> _position b
+    , _shadow     = _shadow a <> _shadow b
+    , _transition = _transition a <> _transition b
     , _box_custom = _box_custom a <> _box_custom b
     }

@@ -114,7 +114,7 @@ import Classh.Internal.TShow as X
 import Classh.Internal.Utils as X
 
 import Data.Default
-import Language.Haskell.TH
+import "template-haskell" Language.Haskell.TH
 import qualified Data.Text as T
 
 
