@@ -31,6 +31,7 @@ module Classh.Setters where
 
 import Classh.Responsive.WhenTW
 import Classh.Responsive.ZipScreens
+import Classh.WithTransition
 import Control.Lens hiding (only)
 
 -- | Append a list to existing WhenTW field of a config
@@ -43,36 +44,53 @@ infixr 4 .+
 (.+) :: ASetter s t [a] [a] -> [a] -> s -> t
 (.+) = (.~+)
 
--- | Extend existing WhenTW field of a config with new value at end of input list 
+-- | Extend existing WhenTW field of a config with new value at end of input list
 infixr 4 .++
-(.++) :: ASetter s t (WhenTW a) (WhenTW a) -> a -> s -> t
-someLens .++ newVals = over someLens (++ (only newVals))
+(.++) :: AutoWrap a b => ASetter s t (WhenTW b) (WhenTW b) -> a -> s -> t
+someLens .++ newVals = over someLens (++ (only $ autoWrap newVals))
 
 -- | Set property to a singular constant value
+-- Uses AutoWrap to automatically wrap values in WithTransition when needed
 infixr 4 .~~
-(.~~) :: ASetter s t b (WhenTW a) -> a -> s -> t
-someLens .~~ newVals = over someLens (const $ only newVals)
+(.~~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> a -> s -> t
+someLens .~~ newVals = over someLens (const $ only $ autoWrap newVals)
 
 -- | Zip input list with screen sizes to create a responsive property and override
+-- Uses AutoWrap to automatically wrap values in WithTransition when needed
 infixr 4 .|~
-(.|~) :: ASetter s t b (WhenTW a) -> [a] -> s -> t
-someLens .|~ newVals = over someLens (const $ zipScreens newVals)
+(.|~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> [a] -> s -> t
+someLens .|~ newVals = over someLens (const $ zipScreens $ fmap autoWrap newVals)
 
 -- | Zip input list with screen sizes to create a responsive property and add to input property
+-- Uses AutoWrap to automatically wrap values in WithTransition when needed
 infixr 4 .|+
-(.|+) :: ASetter s t (WhenTW a) (WhenTW a) -> [a] -> s -> t
-someLens .|+ newVals = over someLens (++ (zipScreens newVals))
+(.|+) :: AutoWrap a b => ASetter s t (WhenTW b) (WhenTW b) -> [a] -> s -> t
+someLens .|+ newVals = over someLens (++ (zipScreens $ fmap autoWrap newVals))
 
 
 
--- | Both are functions from Classh with changed infix precedence to work with <> 
-infixr 7 .- 
-(.-) :: ASetter s t b (WhenTW a) -> a -> s -> t
-someLens .- newVals = over someLens (const $ only newVals)
+-- | Both are functions from Classh with changed infix precedence to work with <>
+-- Uses AutoWrap to automatically wrap values in WithTransition when needed
+infixr 7 .-
+(.-) :: AutoWrap a b => ASetter s t c (WhenTW b) -> a -> s -> t
+someLens .- newVals = over someLens (const $ only $ autoWrap newVals)
 
 infixr 7 .|<~
-(.|<~) :: ASetter s t b (WhenTW a) -> [a] -> s -> t
-someLens .|<~ newVals = over someLens (const $ zipScreens newVals)
+(.|<~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> [a] -> s -> t
+someLens .|<~ newVals = over someLens (const $ zipScreens $ fmap autoWrap newVals)
+
+-- | Set property with explicit transition support
+-- This operator allows you to specify transitions per-condition
+--
+-- Example:
+-- @
+--   bgColor .~^ [ ("def", purple)
+--               , ("hover", lavender `withTransition` Duration_300)
+--               ]
+-- @
+infixr 4 .~^
+(.~^) :: ASetter s t c (WhenTW (WithTransition a)) -> [(TWCondition, WithTransition a)] -> s -> t
+someLens .~^ newVals = over someLens (const newVals)
 
 
 -- .:|
