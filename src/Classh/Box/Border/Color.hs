@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Classh.Box.Border.Color where
 
 import Classh.Class.ShowTW
@@ -5,26 +7,30 @@ import Classh.Class.SetSides
 import Classh.Responsive.WhenTW
 import Classh.Internal.Chain
 import Classh.Color
+import Classh.WithTransition
+import Classh.Box.Transition (TransitionProperty(..))
 import Data.Default
 import Control.Lens (lens, makeLenses)
 
 
--- |Holds Border 'Color' by side
--- 
+-- |Holds Border 'Color' by side (transitionable)
+--
 --  For example:
--- 
+--
 -- > elClass "div" $(classh' [ border . bColor . borderColor_t .~~ Black ])
 -- > -- Or with shorthand
 -- > elClass "div" $(classh' [ bc_t .~~ Black ])
+-- > -- With transitions:
+-- > elClass "div" $(classh' [ bc_t .~^ [("def", Black), ("hover", Red `withTransition` Duration_300)] ])
 data BorderColorSides = BorderColorSides
-  { _borderColor_l :: WhenTW Color
+  { _borderColor_l :: WhenTW (WithTransition Color)
   -- ^ border-l-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_r :: WhenTW Color
+  , _borderColor_r :: WhenTW (WithTransition Color)
   -- ^ border-r-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_t :: WhenTW Color
+  , _borderColor_t :: WhenTW (WithTransition Color)
   -- ^ border-t-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_b :: WhenTW Color
-  -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color 
+  , _borderColor_b :: WhenTW (WithTransition Color)
+  -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color
   } deriving Show
 
 instance Default BorderColorSides where
@@ -33,16 +39,17 @@ instance Default BorderColorSides where
 
 instance ShowTW BorderColorSides where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_borderColor_l cfg) ((<>) "border-l-" . showTW)
-    , renderWhenTW (_borderColor_r cfg) ((<>) "border-r-" . showTW)
-    , renderWhenTW (_borderColor_t cfg) ((<>) "border-t-" . showTW)
-    , renderWhenTW (_borderColor_b cfg) ((<>) "border-b-" . showTW)
+    [ renderWithTransitionTW (_borderColor_l cfg) ((<>) "border-l-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_r cfg) ((<>) "border-r-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_t cfg) ((<>) "border-t-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_b cfg) ((<>) "border-b-" . showTW) Transition_Colors
     ]
 
 makeLenses ''BorderColorSides
 
 -- | Like border-'Color', eg border-white
-instance SetSides BorderColorSides Color where
+-- Now uses WithTransition Color so .~~ will auto-wrap, and .~^ allows transitions
+instance SetSides BorderColorSides (WithTransition Color) where
   l = borderColor_l
   r = borderColor_r
   t = borderColor_t
