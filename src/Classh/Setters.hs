@@ -1,6 +1,12 @@
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FunctionalDependencies #-}
+
 --------------------------------------------------------------------------------
 -- |
---  Module      :  Classh.Box.Border
+--  Module      :  Classh.Setters
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -8,7 +14,7 @@
 --  Stability   :  provisional
 --  Portability :  portable
 --
---  Types to represent tailwind box's border config of 'BoxConfig'  
+--  Setter operators for ClasshSS configs
 --
 --  Any field named _someField has an associated lens `someField`
 --  see @defaultNameTransform@ from Lens.Family.THCore
@@ -34,50 +40,73 @@ import Classh.Responsive.ZipScreens
 import Classh.WithTransition
 import Control.Lens hiding (only)
 
--- | Append a list to existing WhenTW field of a config
+-- | Append a list to existing WhenTW field of a config (for non-transitionable fields)
 infixr 4 .~+
-(.~+) :: ASetter s t [a] [a] -> [a] -> s -> t
+(.~+) :: ASetter s t (WhenTW a) (WhenTW a) -> WhenTW a -> s -> t
 someLens .~+ newVals = over someLens (++ newVals)
 
--- | Append a list to existing WhenTW field of a config
+-- | Append a list to existing WhenTW field of a config (for non-transitionable fields)
 infixr 4 .+
-(.+) :: ASetter s t [a] [a] -> [a] -> s -> t
+(.+) :: ASetter s t (WhenTW a) (WhenTW a) -> WhenTW a -> s -> t
 (.+) = (.~+)
 
--- | Extend existing WhenTW field of a config with new value at end of input list
+-- | Extend existing WhenTW field with single value (for non-transitionable fields)
 infixr 4 .++
-(.++) :: AutoWrap a b => ASetter s t (WhenTW b) (WhenTW b) -> a -> s -> t
-someLens .++ newVals = over someLens (++ (only $ autoWrap newVals))
+(.++) :: ASetter s t (WhenTW a) (WhenTW a) -> a -> s -> t
+someLens .++ newVals = over someLens (++ (only newVals))
+
+type family UnwrapType a where
+  UnwrapType (WithTransition a) = a
+  UnwrapType a = a
 
 -- | Set property to a singular constant value
--- Uses AutoWrap to automatically wrap values in WithTransition when needed
+-- For WithTransition fields, takes unwrapped value and wraps with noTransition
+-- For plain fields, takes value directly
+-- User always provides unwrapped values to (.~~)
 infixr 4 .~~
-(.~~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> a -> s -> t
-someLens .~~ newVals = over someLens (const $ only $ autoWrap newVals)
+class SetConstant field where
+  (.~~) :: ASetter s t c (WhenTW field) -> UnwrapType field -> s -> t
+
+instance SetConstant (WithTransition a) where
+  someLens .~~ newVals = over someLens (const $ only $ noTransition newVals)
+
+instance {-# OVERLAPPABLE #-} (UnwrapType a ~ a) => SetConstant a where
+  someLens .~~ newVals = over someLens (const $ only newVals)
 
 -- | Zip input list with screen sizes to create a responsive property and override
--- Uses AutoWrap to automatically wrap values in WithTransition when needed
+-- Works for both transitionable and non-transitionable fields
 infixr 4 .|~
-(.|~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> [a] -> s -> t
-someLens .|~ newVals = over someLens (const $ zipScreens $ fmap autoWrap newVals)
+class SetResponsive a where
+  (.|~) :: ASetter s t c (WhenTW a) -> [UnwrapType a] -> s -> t
 
--- | Zip input list with screen sizes to create a responsive property and add to input property
--- Uses AutoWrap to automatically wrap values in WithTransition when needed
+instance SetResponsive (WithTransition a) where
+  someLens .|~ newVals = over someLens (const $ zipScreens $ fmap noTransition newVals)
+
+instance {-# OVERLAPPABLE #-} (UnwrapType a ~ a) => SetResponsive a where
+  someLens .|~ newVals = over someLens (const $ zipScreens newVals)
+
+-- | Zip input list with screen sizes and add to existing property
+-- Works for both transitionable and non-transitionable fields
 infixr 4 .|+
-(.|+) :: AutoWrap a b => ASetter s t (WhenTW b) (WhenTW b) -> [a] -> s -> t
-someLens .|+ newVals = over someLens (++ (zipScreens $ fmap autoWrap newVals))
+class AddResponsive a where
+  (.|+) :: ASetter s t (WhenTW a) (WhenTW a) -> [UnwrapType a] -> s -> t
+
+instance AddResponsive (WithTransition a) where
+  someLens .|+ newVals = over someLens (++ (zipScreens $ fmap noTransition newVals))
+
+instance {-# OVERLAPPABLE #-} (UnwrapType a ~ a) => AddResponsive a where
+  someLens .|+ newVals = over someLens (++ (zipScreens newVals))
 
 
 
 -- | Both are functions from Classh with changed infix precedence to work with <>
--- Uses AutoWrap to automatically wrap values in WithTransition when needed
 infixr 7 .-
-(.-) :: AutoWrap a b => ASetter s t c (WhenTW b) -> a -> s -> t
-someLens .- newVals = over someLens (const $ only $ autoWrap newVals)
+(.-) :: SetConstant a => ASetter s t c (WhenTW a) -> UnwrapType a -> s -> t
+(.-) = (.~~)
 
 infixr 7 .|<~
-(.|<~) :: AutoWrap a b => ASetter s t c (WhenTW b) -> [a] -> s -> t
-someLens .|<~ newVals = over someLens (const $ zipScreens $ fmap autoWrap newVals)
+(.|<~) :: SetResponsive a => ASetter s t c (WhenTW a) -> [UnwrapType a] -> s -> t
+(.|<~) = (.|~)
 
 -- | Set property with explicit transition support
 -- This operator allows you to specify transitions per-condition
