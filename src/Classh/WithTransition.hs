@@ -85,25 +85,6 @@ withTransitionFull val cfg = WithTransition val (Just cfg)
 noTransition :: a -> WithTransition a
 noTransition val = WithTransition val Nothing
 
--- | Type class for automatic wrapping in WithTransition
--- This enables backwards compatibility for existing operators
-class AutoWrap a b where
-  autoWrap :: a -> b
-
--- | Wrap plain values in WithTransition with Nothing
--- This makes existing code work: bgColor .~~ purple
-instance AutoWrap a (WithTransition a) where
-  autoWrap a = WithTransition a Nothing
-
--- | Pass through values that don't need wrapping
--- This makes existing code work: colStart .~~ 2
-instance {-# OVERLAPPABLE #-} AutoWrap a a where
-  autoWrap = id
-
--- | Pass through values that are already wrapped
-instance AutoWrap (WithTransition a) (WithTransition a) where
-  autoWrap = id
-
 instance Default a => Default (WithTransition a) where
   def = WithTransition def Nothing
 
