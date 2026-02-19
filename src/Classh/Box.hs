@@ -88,6 +88,7 @@ import Classh.Box.Placement as X
 import Classh.Box.Border as X
 import Classh.Box.Shadow as X
 import Classh.Box.Transition as X
+import Classh.WithTransition as X
 
 import Control.Lens hiding ((<&>))
 import Data.Default
@@ -96,15 +97,15 @@ import qualified Data.Text as T
 data BoxConfig = BoxConfig
   { _colStart :: WhenTW Int
   , _colSpan :: WhenTW Int
-  , _bgColor :: WhenTW Color
-  , _bgOpacity :: WhenTW Int -- 1 5 10 .. 100 -- def == 519
+  , _bgColor :: WhenTW (WithTransition Color)  -- Transitionable!
+  , _bgOpacity :: WhenTW (WithTransition Int)  -- Transitionable! (1 5 10 .. 100 -- def == 519)
   , _padding :: BoxPadding
   , _margin :: BoxMargin
   , _sizingBand :: BoxSizingBand
   , _border :: BorderConfig -- { rounded, thickness, etc .. }
   , _position :: WhenTW (Justify, Align)
-  , _shadow :: WhenTW BoxShadow
-  , _transition :: TransitionConfig
+  , _shadow :: WhenTW (WithTransition BoxShadow)  -- Transitionable!
+  , _transition :: TransitionConfigGlobal  -- Global transition (legacy support)
   --, _text_align :: Align ... or should we set == position.align
   , _box_custom :: T.Text
   }
@@ -112,7 +113,6 @@ data BoxConfig = BoxConfig
 
 
 makeLenses ''BoxConfig
-
 
 ------------  Defaults of Records
 
@@ -130,10 +130,10 @@ instance CompileStyle BoxConfig where
       , compileSizingBand (_sizingBand cfg)
       , compilePadding (_padding cfg)
       , compileMargin (_margin cfg)
-      , compileWhenTW (_bgColor cfg) ((<>) "bg-" . showTW)
-      , compileWhenTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow)
-      , compileWhenTW (_shadow cfg) showTW
-      , compileTransition (_transition cfg)
+      , compileWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
+      , compileWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
+      , compileWithTransitionTW (_shadow cfg) showTW Transition_Shadow
+      , compileTransitionGlobal (_transition cfg)
       , Right $ _box_custom cfg
       ]
       where
@@ -147,54 +147,54 @@ instance CompileStyle BoxConfig where
           ]
 
         compileBorderRadius cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_borderRadius_tr cfg') ((<>) "rounded-tr" . showTW)
-          , compileWhenTW (_borderRadius_tl cfg') ((<>) "rounded-tl" . showTW)
-          , compileWhenTW (_borderRadius_br cfg') ((<>) "rounded-br" . showTW)
-          , compileWhenTW (_borderRadius_bl cfg') ((<>) "rounded-bl" . showTW)
+          [ compileWithTransitionTW (_borderRadius_tr cfg') ((<>) "rounded-tr" . showTW) Transition_All
+          , compileWithTransitionTW (_borderRadius_tl cfg') ((<>) "rounded-tl" . showTW) Transition_All
+          , compileWithTransitionTW (_borderRadius_br cfg') ((<>) "rounded-br" . showTW) Transition_All
+          , compileWithTransitionTW (_borderRadius_bl cfg') ((<>) "rounded-bl" . showTW) Transition_All
           ]
 
         compileBorderWidth cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_borderWidth_l cfg') ((<>) "border-l" . showTW)
-          , compileWhenTW (_borderWidth_r cfg') ((<>) "border-r" . showTW)
-          , compileWhenTW (_borderWidth_t cfg') ((<>) "border-t" . showTW)
-          , compileWhenTW (_borderWidth_b cfg') ((<>) "border-b" . showTW)
+          [ compileWithTransitionTW (_borderWidth_l cfg') ((<>) "border-l" . showTW) Transition_All
+          , compileWithTransitionTW (_borderWidth_r cfg') ((<>) "border-r" . showTW) Transition_All
+          , compileWithTransitionTW (_borderWidth_t cfg') ((<>) "border-t" . showTW) Transition_All
+          , compileWithTransitionTW (_borderWidth_b cfg') ((<>) "border-b" . showTW) Transition_All
           ]
 
         compileBorderColor cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_borderColor_l cfg') ((<>) "border-l-" . showTW)
-          , compileWhenTW (_borderColor_r cfg') ((<>) "border-r-" . showTW)
-          , compileWhenTW (_borderColor_t cfg') ((<>) "border-t-" . showTW)
-          , compileWhenTW (_borderColor_b cfg') ((<>) "border-b-" . showTW)
+          [ compileWithTransitionTW (_borderColor_l cfg') ((<>) "border-l-" . showTW) Transition_Colors
+          , compileWithTransitionTW (_borderColor_r cfg') ((<>) "border-r-" . showTW) Transition_Colors
+          , compileWithTransitionTW (_borderColor_t cfg') ((<>) "border-t-" . showTW) Transition_Colors
+          , compileWithTransitionTW (_borderColor_b cfg') ((<>) "border-b-" . showTW) Transition_Colors
           ]
 
         compileRing cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_ringWidth cfg') showTW
-          , compileWhenTW (_ringColor cfg') ((<>) "ring-" . showTW)
-          , compileWhenTW (_ringOpacity cfg') ((<>) "ring-opacity-" . tshow)
+          [ compileWithTransitionTW (_ringWidth cfg') showTW Transition_All
+          , compileWithTransitionTW (_ringColor cfg') ((<>) "ring-" . showTW) Transition_Colors
+          , compileWithTransitionTW (_ringOpacity cfg') ((<>) "ring-opacity-" . tshow) Transition_Opacity
           ]
 
         compileSizingBand cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_widthC . _maxSize $ cfg') ((<>) "max-w-" . showTW)
-          , compileWhenTW (_heightC . _maxSize $ cfg') ((<>) "max-h-" . showTW)
-          , compileWhenTW (_widthC . _minSize $ cfg') ((<>) "min-w-" . showTW)
-          , compileWhenTW (_heightC . _minSize $ cfg') ((<>) "min-h-" . showTW)
-          , compileWhenTW (_width . _size $ cfg') ((<>) "w-" . showTW)
-          , compileWhenTW (_height . _size $ cfg') ((<>) "h-" . showTW)
+          [ compileWithTransitionTW (_widthC . _maxSize $ cfg') ((<>) "max-w-" . showTW) Transition_All
+          , compileWithTransitionTW (_heightC . _maxSize $ cfg') ((<>) "max-h-" . showTW) Transition_All
+          , compileWithTransitionTW (_widthC . _minSize $ cfg') ((<>) "min-w-" . showTW) Transition_All
+          , compileWithTransitionTW (_heightC . _minSize $ cfg') ((<>) "min-h-" . showTW) Transition_All
+          , compileWithTransitionTW (_width . _size $ cfg') ((<>) "w-" . showTW) Transition_All
+          , compileWithTransitionTW (_height . _size $ cfg') ((<>) "h-" . showTW) Transition_All
           ]
 
 
         compileMargin cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_marginL cfg') ((<>) "ml-" . showTW)
-          , compileWhenTW (_marginR cfg') ((<>) "mr-" . showTW)
-          , compileWhenTW (_marginT cfg') ((<>) "mt-" . showTW)
-          , compileWhenTW (_marginB cfg') ((<>) "mb-" . showTW)
+          [ compileWithTransitionTW (_marginL cfg') ((<>) "ml-" . showTW) Transition_All
+          , compileWithTransitionTW (_marginR cfg') ((<>) "mr-" . showTW) Transition_All
+          , compileWithTransitionTW (_marginT cfg') ((<>) "mt-" . showTW) Transition_All
+          , compileWithTransitionTW (_marginB cfg') ((<>) "mb-" . showTW) Transition_All
           ]
 
-        compileTransition cfg' = pure . foldr (<&>) mempty =<< sequenceA
+        compileTransitionGlobal cfg' = pure . foldr (<&>) mempty =<< sequenceA
           [ compileWhenTW (_transitionProperty cfg') showTW
-          , compileWhenTW (_transitionDuration cfg') showTW
-          , compileWhenTW (_transitionTiming cfg') showTW
-          , compileWhenTW (_transitionDelay cfg') showTW
+          , compileWhenTW (_transitionDurationGlobal cfg') showTW
+          , compileWhenTW (_transitionTimingGlobal cfg') showTW
+          , compileWhenTW (_transitionDelayGlobal cfg') showTW
           ]
 
         compilePos posCfg = case f $ fmap fst posCfg of
@@ -217,8 +217,8 @@ instance ShowTW BoxConfig where
   showTW cfg = foldr (<&>) mempty
    [ renderWhenTW (_colStart cfg) ((<>) "col-start-" . tshow)
    , renderWhenTW (_colSpan cfg) ((<>) "col-span-" . tshow)
-   , renderWhenTW (_bgColor cfg) ((<>) "bg-" . showTW)
-   , renderWhenTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow)
+   , renderWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
+   , renderWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
    , showTW . _border $ cfg
    , showTW . _sizingBand $ cfg
    , showTW . _padding $ cfg
@@ -228,7 +228,7 @@ instance ShowTW BoxConfig where
         let prefix = if c == "def" then "" else (c <> ":")
         in prefix <> "grid" <&> prefix <> (showTW jus) <&> prefix <> (showTW align)
      ) $ _position cfg
-   , renderWhenTW (_shadow cfg) showTW
+   , renderWithTransitionTW (_shadow cfg) showTW Transition_Shadow
    , showTW . _transition $ cfg
    --, renderWhenTW (_position cfg) $ \(j,a) -> "grid " <> showTW j <> " " <> showTW a
    , _box_custom cfg
