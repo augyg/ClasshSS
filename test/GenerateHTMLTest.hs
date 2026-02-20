@@ -18,7 +18,6 @@ import Control.Lens ((&))
 import Data.Default (def)
 import qualified Data.Text as T
 import Data.Either (fromRight)
-import System.Process (rawSystem)
 
 -- Test configurations
 tests :: [(String, BoxConfig, String)]
@@ -198,6 +197,4 @@ generateTestSection (name, cfg, description) =
 main :: IO ()
 main = do
   generateHTML
-  putStrLn "Opening in Chrome..."
-  _ <- rawSystem "google-chrome-stable" ["test-output.html"]
-  return ()
+  putStrLn "✓ Test complete! Open test-output.html in your browser to view."

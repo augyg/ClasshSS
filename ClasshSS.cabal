@@ -151,5 +151,4 @@ test-suite generate-html-test
                     , data-default
                     , lens
                     , text
-                    , process
     default-language: Haskell2010
