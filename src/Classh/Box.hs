@@ -66,7 +66,6 @@ module Classh.Box
   , border
   , position
   , shadow
-  , transition
   , box_custom
   ) where
 
@@ -105,8 +104,6 @@ data BoxConfig = BoxConfig
   , _border :: BorderConfig -- { rounded, thickness, etc .. }
   , _position :: WhenTW (Justify, Align)
   , _shadow :: WhenTW (WithTransition BoxShadow)  -- Transitionable!
-  , _transition :: TransitionConfigGlobal  -- Global transition (legacy support)
-  --, _text_align :: Align ... or should we set == position.align
   , _box_custom :: T.Text
   }
   deriving Show
@@ -117,7 +114,7 @@ makeLenses ''BoxConfig
 ------------  Defaults of Records
 
 instance Default BoxConfig where
-  def = BoxConfig def def def def def def def def def def def ""
+  def = BoxConfig def def def def def def def def def def ""
 
 
 instance CompileStyle BoxConfig where
@@ -133,7 +130,6 @@ instance CompileStyle BoxConfig where
       , compileWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
       , compileWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
       , compileWithTransitionTW (_shadow cfg) showTW Transition_Shadow
-      , compileTransitionGlobal (_transition cfg)
       , Right $ _box_custom cfg
       ]
       where
@@ -190,13 +186,6 @@ instance CompileStyle BoxConfig where
           , compileWithTransitionTW (_marginB cfg') ((<>) "mb-" . showTW) Transition_All
           ]
 
-        compileTransitionGlobal cfg' = pure . foldr (<&>) mempty =<< sequenceA
-          [ compileWhenTW (_transitionProperty cfg') showTW
-          , compileWhenTW (_transitionDurationGlobal cfg') showTW
-          , compileWhenTW (_transitionTimingGlobal cfg') showTW
-          , compileWhenTW (_transitionDelayGlobal cfg') showTW
-          ]
-
         compilePos posCfg = case f $ fmap fst posCfg of
           Left e -> Left e
           Right () -> Right $ foldr (<&>) mempty $ fmap
@@ -229,8 +218,6 @@ instance ShowTW BoxConfig where
         in prefix <> "grid" <&> prefix <> (showTW jus) <&> prefix <> (showTW align)
      ) $ _position cfg
    , renderWithTransitionTW (_shadow cfg) showTW Transition_Shadow
-   , showTW . _transition $ cfg
-   --, renderWhenTW (_position cfg) $ \(j,a) -> "grid " <> showTW j <> " " <> showTW a
    , _box_custom cfg
    ]
 
@@ -249,6 +236,5 @@ instance Semigroup BoxConfig where
     , _border     = _border a   <> _border b
     , _position   = _position a <> _position b
     , _shadow     = _shadow a <> _shadow b
-    , _transition = _transition a <> _transition b
     , _box_custom = _box_custom a <> _box_custom b
     }

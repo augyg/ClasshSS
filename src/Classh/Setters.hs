@@ -67,7 +67,7 @@ infixr 4 .~~
 class SetConstant field where
   (.~~) :: ASetter s t c (WhenTW field) -> UnwrapType field -> s -> t
 
-instance SetConstant (WithTransition a) where
+instance {-# OVERLAPPING #-} SetConstant (WithTransition a) where
   someLens .~~ newVals = over someLens (const $ only $ noTransition newVals)
 
 instance {-# OVERLAPPABLE #-} (UnwrapType a ~ a) => SetConstant a where
@@ -101,7 +101,7 @@ instance {-# OVERLAPPABLE #-} (UnwrapType a ~ a) => AddResponsive a where
 
 -- | Both are functions from Classh with changed infix precedence to work with <>
 infixr 7 .-
-(.-) :: SetConstant a => ASetter s t c (WhenTW a) -> UnwrapType a -> s -> t
+(.-) :: SetConstant field => ASetter s t c (WhenTW field) -> UnwrapType field -> s -> t
 (.-) = (.~~)
 
 infixr 7 .|<~

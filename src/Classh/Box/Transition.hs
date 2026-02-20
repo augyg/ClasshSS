@@ -116,7 +116,7 @@ instance ShowTW TransitionProperty where
   showTW = \case
     Transition -> "transition"
     Transition_Custom val -> "transition-[" <> val <> "]"
-    other -> T.toLower (tshow other)
+    other -> T.replace "_" "-" $ T.toLower (tshow other)
 
 -- Instances for TransitionDuration
 instance Default TransitionDuration where
@@ -135,7 +135,7 @@ instance Default TransitionTimingFunction where
 instance ShowTW TransitionTimingFunction where
   showTW = \case
     Ease_Custom val -> "ease-[" <> val <> "]"
-    other -> T.toLower (tshow other)
+    other -> T.replace "_" "-" $ T.toLower (tshow other)
 
 -- Instances for TransitionDelay
 instance Default TransitionDelay where

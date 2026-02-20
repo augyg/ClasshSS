@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Classh.Class.SetSides where
 
@@ -7,7 +8,7 @@ import Control.Lens
 
 -- | This class allows for shorthand for a config that is based on sides, such
 -- | as padding or margin or border
-class SetSides tw a where
+class SetSides tw a | tw -> a where
   x :: Lens' tw (WhenTW a)
   y :: Lens' tw (WhenTW a)
   xy :: Lens' tw (WhenTW a)

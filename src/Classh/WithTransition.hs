@@ -33,9 +33,9 @@
 module Classh.WithTransition where
 
 import Classh.Box.Transition
-import Classh.Class.ShowTW
 import Classh.Responsive.WhenTW
 import Classh.Internal.Chain
+import Classh.Internal.TShow (tshow)
 import Data.Default
 import qualified Data.Text as T
 
@@ -105,13 +105,36 @@ renderWithTransitionTW tws construct prop = foldr (<&>) mempty $
         transitionClasses = case mTransCfg of
           Nothing -> mempty
           Just cfg ->
-            let transProp = prefix <> showTW prop
-                transDur = prefix <> showTW (_transitionDuration cfg)
-                transTiming = prefix <> showTW (_transitionTiming cfg)
-                transDelay = prefix <> showTW (_transitionDelay cfg)
-            in transProp <&> transDur <&> transTiming <&> transDelay
+            let cssProp = transitionPropertyToCSSName prop
+                duration = T.drop 9 $ tshow (_transitionDuration cfg)  -- Remove "Duration_" prefix
+                timing = transitionTimingToCSSName (_transitionTiming cfg)
+                delay = T.drop 6 $ tshow (_transitionDelay cfg)  -- Remove "Delay_" prefix
+                -- Format: [transition:property_duration_timing_delay]
+                transValue = cssProp <> "_" <> duration <> "ms_" <> timing <> "_" <> delay <> "ms"
+            in prefix <> "[transition:" <> transValue <> "]"
     in valueClass <&> transitionClasses
   ) tws
+
+-- | Convert TransitionProperty to CSS property name for arbitrary value syntax
+transitionPropertyToCSSName :: TransitionProperty -> T.Text
+transitionPropertyToCSSName = \case
+  Transition_None -> "none"
+  Transition_All -> "all"
+  Transition -> "all"  -- Default transition affects all properties
+  Transition_Colors -> "background-color,border-color,color,fill,stroke"
+  Transition_Opacity -> "opacity"
+  Transition_Shadow -> "box-shadow"
+  Transition_Transform -> "transform"
+  Transition_Custom val -> val
+
+-- | Convert TransitionTimingFunction to CSS timing function name
+transitionTimingToCSSName :: TransitionTimingFunction -> T.Text
+transitionTimingToCSSName = \case
+  Ease_Linear -> "linear"
+  Ease_In -> "in"
+  Ease_Out -> "out"
+  Ease_InOut -> "in-out"
+  Ease_Custom val -> val
 
 -- | Helper for compiling WithTransition values (with duplicate checking)
 compileWithTransitionTW :: WhenTW (WithTransition a)
