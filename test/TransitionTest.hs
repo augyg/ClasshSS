@@ -4,14 +4,7 @@
 module Main where
 
 import Classh
-import Classh.Box
-import Classh.Box.Padding
-import Classh.Color
-import Classh.Box.Transition
-import Classh.WithTransition
-import Classh.Setters
 import Classh.Class.CompileStyle
-import Classh.Class.SetSides
 import Control.Lens ((&))
 import Data.Default (def)
 import qualified Data.Text as T

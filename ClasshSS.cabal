@@ -26,7 +26,7 @@ extra-doc-files:    CHANGELOG.md
 -- extra-source-files:
 
 common warnings
-    ghc-options: -Wall
+    ghc-options: -Wall -Werror
 
 library
     import:           warnings
@@ -146,6 +146,18 @@ test-suite generate-html-test
     type:             exitcode-stdio-1.0
     hs-source-dirs:   test
     main-is:          GenerateHTMLTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
+    default-language: Haskell2010
+
+test-suite transform-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          TransformTest.hs
     build-depends:    base
                     , ClasshSS
                     , data-default

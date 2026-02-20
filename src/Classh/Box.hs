@@ -66,6 +66,8 @@ module Classh.Box
   , border
   , position
   , shadow
+  , cursor
+  , transform
   , box_custom
   ) where
 
@@ -79,6 +81,7 @@ import Classh.Internal.TShow
 import Classh.Internal.TWNum as X
 import Classh.Responsive.WhenTW as X
 import Classh.Color as X
+import Classh.Cursor as X
 import Classh.Box.TWSize as X
 import Classh.Box.Padding as X
 import Classh.Box.Margin as X
@@ -87,9 +90,10 @@ import Classh.Box.Placement as X
 import Classh.Box.Border as X
 import Classh.Box.Shadow as X
 import Classh.Box.Transition as X
+import Classh.Box.Transform as X
 import Classh.WithTransition as X
 
-import Control.Lens hiding ((<&>))
+import Control.Lens hiding ((<&>), transform)
 import Data.Default
 import qualified Data.Text as T
 
@@ -104,6 +108,8 @@ data BoxConfig = BoxConfig
   , _border :: BorderConfig -- { rounded, thickness, etc .. }
   , _position :: WhenTW (Justify, Align)
   , _shadow :: WhenTW (WithTransition BoxShadow)  -- Transitionable!
+  , _cursor :: WhenTW CursorStyle
+  , _transform :: TransformConfig  -- All transform properties (rotate, scale, translate, skew, origin)
   , _box_custom :: T.Text
   }
   deriving Show
@@ -114,7 +120,7 @@ makeLenses ''BoxConfig
 ------------  Defaults of Records
 
 instance Default BoxConfig where
-  def = BoxConfig def def def def def def def def def def ""
+  def = BoxConfig def def def def def def def def def def def def ""
 
 
 instance CompileStyle BoxConfig where
@@ -130,6 +136,8 @@ instance CompileStyle BoxConfig where
       , compileWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
       , compileWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
       , compileWithTransitionTW (_shadow cfg) showTW Transition_Shadow
+      , compileWhenTW (_cursor cfg) showTW
+      , compileS (_transform cfg)
       , Right $ _box_custom cfg
       ]
       where
@@ -218,6 +226,7 @@ instance ShowTW BoxConfig where
         in prefix <> "grid" <&> prefix <> (showTW jus) <&> prefix <> (showTW align)
      ) $ _position cfg
    , renderWithTransitionTW (_shadow cfg) showTW Transition_Shadow
+   , showTW . _transform $ cfg
    , _box_custom cfg
    ]
 
@@ -236,5 +245,7 @@ instance Semigroup BoxConfig where
     , _border     = _border a   <> _border b
     , _position   = _position a <> _position b
     , _shadow     = _shadow a <> _shadow b
+    , _cursor     = _cursor a <> _cursor b
+    , _transform  = _transform a <> _transform b
     , _box_custom = _box_custom a <> _box_custom b
     }

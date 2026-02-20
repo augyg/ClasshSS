@@ -202,10 +202,10 @@ classhUnsafe muts = showTW $ def `applyFs` muts
 
 --classhV, classhV' :: Q Exp
 classhV :: (CompileStyle a) => a -> (a -> a) -> Q Exp
-classhV base transform = classh base [transform]
+classhV base mutation = classh base [mutation]
 
 classhV' :: (Default a, CompileStyle a) => (a -> a) -> Q Exp
-classhV' transform = classh' [transform]
+classhV' mutation = classh' [mutation]
 
 
 -- | Synonym to showTW
