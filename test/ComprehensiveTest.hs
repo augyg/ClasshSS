@@ -28,13 +28,13 @@ testBoxBasics :: BoxConfig
 testBoxBasics = def
   & colStart .~~ 1
   & colSpan .~~ 6
-  & bgColor .~~ Blue C500
+  & bgColor .~~ solidColor (Blue C500)
   & bgOpacity .~~ 80
 
 -- Responsive properties with .|~
 testResponsive :: BoxConfig
 testResponsive = def
-  & bgColor .|~ [Gray C100, Gray C200, Gray C300, Gray C400, Gray C500, Gray C600]
+  & bgColor .|~ [solidColor (Gray C100), solidColor (Gray C200), solidColor (Gray C300), solidColor (Gray C400), solidColor (Gray C500), solidColor (Gray C600)]
 
 -- Padding with SetSides shorthand
 testPaddingSetSides :: BoxConfig
@@ -98,8 +98,8 @@ testPosition = def
 -- Combined complex test
 testComplex :: BoxConfig
 testComplex = def
-  & bgColor .~^ [ ("def", noTransition (Blue C600))
-                , ("hover", Blue C400 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Blue C600)))
+                , ("hover", solidColor (Blue C400) `withTransition` Duration_300 `withTiming` Ease_InOut)
                 ]
   & padding . x .~~ TWSize 4
   & padding . y .~~ TWSize 2

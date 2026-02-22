@@ -42,9 +42,9 @@ tests =
 
 testBgAllStates :: BoxConfig
 testBgAllStates = def
-  & bgColor .~^ [ ("def", noTransition (Gray C500))
-                , ("hover", Blue C500 `withTransition` Duration_300 `withTiming` Ease_InOut)
-                , ("focus", Green C500 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Gray C500)))
+                , ("hover", solidColor (Blue C500) `withTransition` Duration_300 `withTiming` Ease_InOut)
+                , ("focus", solidColor (Green C500) `withTransition` Duration_300 `withTiming` Ease_InOut)
                 ]
 
 testBorderAllStates :: BoxConfig
@@ -57,9 +57,9 @@ testBorderAllStates = def
 
 testCombined :: BoxConfig
 testCombined = def
-  & bgColor .~^ [ ("def", noTransition (Blue C600))
-                , ("hover", Blue C400 `withTransition` Duration_300 `withTiming` Ease_InOut)
-                , ("focus", Green C600 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Blue C600)))
+                , ("hover", solidColor (Blue C400) `withTransition` Duration_300 `withTiming` Ease_InOut)
+                , ("focus", solidColor (Green C600) `withTransition` Duration_300 `withTiming` Ease_InOut)
                 ]
   & border . bWidth . allS .~~ B4
   & border . bColor . allS .~^ [ ("def", noTransition (Blue C800))
@@ -69,7 +69,7 @@ testCombined = def
 
 testResponsive :: BoxConfig
 testResponsive = def
-  & bgColor .|~ [ Gray C800, Red C600, Orange C600, Yellow C600, Green C600, Blue C600 ]
+  & bgColor .|~ [ solidColor (Gray C800), solidColor (Red C600), solidColor (Orange C600), solidColor (Yellow C600), solidColor (Green C600), solidColor (Blue C600) ]
 
 testShadow :: BoxConfig
 testShadow = def
@@ -79,8 +79,8 @@ testShadow = def
 
 testComplex :: BoxConfig
 testComplex = def
-  & bgColor .~^ [ ("def", noTransition (Blue C600))
-                , ("hover", Blue C400 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Blue C600)))
+                , ("hover", solidColor (Blue C400) `withTransition` Duration_300 `withTiming` Ease_InOut)
                 ]
   & padding . x .~~ TWSize 4
   & padding . y .~~ TWSize 2
@@ -93,22 +93,22 @@ testComplex = def
 testComprehensiveResponsiveTransitions :: BoxConfig
 testComprehensiveResponsiveTransitions = def
   & bgColor .~^
-    [ ("def",   Red C600    `withTransition` Duration_500  `withTiming` Ease_Linear `withDelay` Delay_0)
-    , ("sm",    Orange C600 `withTransition` Duration_300  `withTiming` Ease_In     `withDelay` Delay_100)
-    , ("md",    Yellow C600 `withTransition` Duration_700  `withTiming` Ease_Out    `withDelay` Delay_150)
-    , ("lg",    Green C600  `withTransition` Duration_200  `withTiming` Ease_InOut  `withDelay` Delay_0)
-    , ("xl",    Blue C600   `withTransition` Duration_1000 `withTiming` Ease_Linear `withDelay` Delay_300)
-    , ("2xl",   Purple C600 `withTransition` Duration_500  `withTiming` Ease_InOut  `withDelay` Delay_75)
-    , ("hover", Pink C400   `withTransition` Duration_150  `withTiming` Ease_Out    `withDelay` Delay_0)
-    , ("focus", Cyan C400   `withTransition` Duration_300  `withTiming` Ease_InOut  `withDelay` Delay_200)
+    [ ("def",   solidColor (Red C600)    `withTransition` Duration_500  `withTiming` Ease_Linear `withDelay` Delay_0)
+    , ("sm",    solidColor (Orange C600) `withTransition` Duration_300  `withTiming` Ease_In     `withDelay` Delay_100)
+    , ("md",    solidColor (Yellow C600) `withTransition` Duration_700  `withTiming` Ease_Out    `withDelay` Delay_150)
+    , ("lg",    solidColor (Green C600)  `withTransition` Duration_200  `withTiming` Ease_InOut  `withDelay` Delay_0)
+    , ("xl",    solidColor (Blue C600)   `withTransition` Duration_1000 `withTiming` Ease_Linear `withDelay` Delay_300)
+    , ("2xl",   solidColor (Purple C600) `withTransition` Duration_500  `withTiming` Ease_InOut  `withDelay` Delay_75)
+    , ("hover", solidColor (Pink C400)   `withTransition` Duration_150  `withTiming` Ease_Out    `withDelay` Delay_0)
+    , ("focus", solidColor (Cyan C400)   `withTransition` Duration_300  `withTiming` Ease_InOut  `withDelay` Delay_200)
     ]
 
 testStackedTransitions :: BoxConfig
 testStackedTransitions = def
   & bgColor .~^
-    [ ("def",   Gray C800   `withTransition` Duration_300 `withTiming` Ease_Linear)
-    , ("sm",    Gray C700   `withTransition` Duration_300 `withTiming` Ease_In)
-    , ("hover", Green C500  `withTransition` Duration_200 `withTiming` Ease_Out)
+    [ ("def",   solidColor (Gray C800)   `withTransition` Duration_300 `withTiming` Ease_Linear)
+    , ("sm",    solidColor (Gray C700)   `withTransition` Duration_300 `withTiming` Ease_In)
+    , ("hover", solidColor (Green C500)  `withTransition` Duration_200 `withTiming` Ease_Out)
     ]
   & border . bWidth . allS .~~ B2
   & border . bColor . allS .~^
@@ -119,16 +119,16 @@ testStackedTransitions = def
 testDelayShowcase :: BoxConfig
 testDelayShowcase = def
   & bgColor .~^
-    [ ("def",   Blue C600 `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_0)
-    , ("hover", Blue C400 `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_500)
-    , ("focus", Blue C200 `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_1000)
+    [ ("def",   solidColor (Blue C600) `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_0)
+    , ("hover", solidColor (Blue C400) `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_500)
+    , ("focus", solidColor (Blue C200) `withTransition` Duration_300 `withTiming` Ease_InOut `withDelay` Delay_1000)
     ]
 
 testSpeedComparison :: BoxConfig
 testSpeedComparison = def
   & bgColor .~^
-    [ ("def",   Purple C600 `withTransition` Duration_75   `withTiming` Ease_Linear)
-    , ("hover", Purple C400 `withTransition` Duration_1000 `withTiming` Ease_Linear)
+    [ ("def",   solidColor (Purple C600) `withTransition` Duration_75   `withTiming` Ease_Linear)
+    , ("hover", solidColor (Purple C400) `withTransition` Duration_1000 `withTiming` Ease_Linear)
     ]
 
 generateHTML :: IO ()

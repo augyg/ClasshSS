@@ -12,30 +12,30 @@ import qualified Data.Text as T
 -- Test 1: Backwards compatible - no transitions
 test1 :: BoxConfig
 test1 = def
-  & bgColor .~~ (Gray C500)
+  & bgColor .~~ solidColor (Gray C500)
   & colSpan .~~ 2
 
 -- Test 2: Using new (.~^) operator with builder pattern
 test2 :: BoxConfig
 test2 = def
-  & bgColor .~^ [ ("def", noTransition (Gray C500))
-                , ("hover", (Gray C300) `withTransition` Duration_300)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Gray C500)))
+                , ("hover", solidColor (Gray C300) `withTransition` Duration_300)
                 ]
 
 -- Test 3: Builder pattern with chaining
 test3 :: BoxConfig
 test3 = def
-  & bgColor .~^ [ ("def", noTransition (Purple C600))
-                , ("hover", (Purple C300) `withTransition` Duration_300 `withTiming` Ease_InOut)
-                , ("focus", (Indigo C500) `withTransition` Duration_500 `withTiming` Ease_Out `withDelay` Delay_100)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Purple C600)))
+                , ("hover", solidColor (Purple C300) `withTransition` Duration_300 `withTiming` Ease_InOut)
+                , ("focus", solidColor (Indigo C500) `withTransition` Duration_500 `withTiming` Ease_Out `withDelay` Delay_100)
                 ]
 
 -- Test 4: All-at-once style
 test4 :: BoxConfig
 test4 = def
-  & bgColor .~^ [ ("def", noTransition (Purple C600))
-                , ("sm", withTransitionAll (Indigo C500) Duration_300 Ease_InOut Delay_0)
-                , ("hover", (Purple C300) `withTransition` Duration_500)
+  & bgColor .~^ [ ("def", noTransition (solidColor (Purple C600)))
+                , ("sm", withTransitionAll (solidColor (Indigo C500)) Duration_300 Ease_InOut Delay_0)
+                , ("hover", solidColor (Purple C300) `withTransition` Duration_500)
                 ]
 
 testCase :: String -> BoxConfig -> T.Text -> IO Bool
