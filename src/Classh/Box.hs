@@ -11,42 +11,292 @@
 --  Stability   :  provisional
 --  Portability :  portable
 --
---  The core interface to creating responsive elements, including images.  
+--  BoxConfig: The core type for styling HTML elements (divs, sections, images, etc.).
 --
---  Here is a common real example creating a box with some text in it, using reflex-dom to illustrate
+--  = Overview
 --
--- > elClass "div" $(classh' [ padding . t .~~ pix 20, bgColor .~~ Gray C300 ]) $ do
--- >    text "Hey"
+--  This module provides 'BoxConfig', the primary configuration type for styling
+--  HTML elements in ClasshSS. It encompasses all visual properties except text-specific
+--  styling (which uses 'Classh.Text.TextConfigTW').
 --
---  This module and all modules which it re-exports are your interface to writing typified classes
---  specifically for Box's ( Box == element )
+--  BoxConfig includes:
 --
--- Using Classh.Shorthand functions we can make this more ergonomic/take up less space
+--  * Layout - Grid positioning, sizing, constraints
+--  * Spacing - Padding and margin with responsive support
+--  * Colors - Background colors and opacity (with transitions)
+--  * Borders - Radius, width, color, style, rings, outlines
+--  * Visual Effects - Shadows (with transitions)
+--  * Transforms - Rotate, scale, translate, skew (with transitions)
+--  * Positioning - Justify and align content
+--  * Cursor - Mouse cursor styles
 --
--- for example
--- > padding . t == pt
+--  = Quick Example
 --
--- The above divs we have created ensure there is no \'classhes\'. For example, if we set the top padding but also the
--- y-padding then it will complain at compile time. Hence, the `$(..)` Template Haskell syntax. You can avoid this by
--- using classhUnsafe without this TH syntax. Classh's type system also enforces that you cannot use text config setters
--- in the same classh expression as one with 'BoxConfig' setters. This is due to the design goal to reduce spooky behavior
--- and misleading code. For example if we have multiple parent divs with text classes, then it will make it challenging to
--- find why a given piece of text appears as such, especially if we refactor components, the reason for its appearance would
--- be even more hidden 
+--  Creating a styled card with Reflex.Dom:
 --
--- Note that we can also use '.|~' and 'zipScreens' to easily create responsive boxes 
--- .|~ takes a list that goes from mobile (less than 640px) -> sm -> md -> lg -> xl -> 2xl (eg. padding) 
--- .~~ takes a singular value for all screen sizes (eg. background color / bgColor) 
--- The reason is because almost all properties are (WhenTW prop) which is a list of values by screen size 
--- this is based on https://tailwindcss.com/docs/responsive-design
+--  @
+--  elClass \"div\" $(classh'
+--    [ bgColor .~~ White
+--    , p .~~ TWSize 6
+--    , br .~~ R_Lg
+--    , shadow .~~ Shadow_Lg
+--    , border . bWidth . allS .~~ B1
+--    , border . bColor . allS .~~ Gray C200
+--    ]) $ do
+--      text \"Card content here\"
+--  @
 --
--- We also have
--- (.~) which is mainly used for `custom` as the associated Record field is not a WhenTW but a String.
--- this is just a simple setter 
--- (.~+) appends the chosen value to what exists (perhaps in a default config)
--- (.|+) like .|~ except that it adds to what already exists (perhaps in a default config)
+--  = BoxConfig Fields
 --
--- We can also add any arbitrary classes to the end of the TextConfigTW using its HasCustom instance
+--  == Grid Layout
+--
+--  * '_colStart' - Grid column start position (1-12)
+--  * '_colSpan' - Grid column span (1-12)
+--
+--  @
+--  $(classh' [ colStart .~~ 2, colSpan .~~ 4 ])
+--  -- Result: \"col-start-2 col-span-4\"
+--  @
+--
+--  == Background
+--
+--  * '_bgColor' - Background color (transitionable)
+--  * '_bgOpacity' - Background opacity 1-100 (transitionable, default 100)
+--
+--  @
+--  -- Simple background
+--  bgColor .~~ Blue C500
+--
+--  -- With hover transition
+--  bgColor .~^ [ (\"def\", noTransition (Blue C500))
+--              , (\"hover\", Blue C600 \`withTransition\` Duration_300)
+--              ]
+--  @
+--
+--  == Spacing
+--
+--  * '_padding' - 'BoxPadding' with individual sides (transitionable)
+--  * '_margin' - 'BoxMargin' with individual sides (transitionable)
+--
+--  @
+--  -- Using shorthand (see "Classh.Shorthand")
+--  pt .~~ TWSize 4   -- padding-top
+--  pb .~~ TWSize 4   -- padding-bottom
+--  px .~~ TWSize 6   -- padding-left and padding-right
+--  py .~~ TWSize 2   -- padding-top and padding-bottom
+--  p .~~ TWSize 4    -- all sides
+--
+--  -- Same pattern for margin: mt, mb, mx, my, m
+--  @
+--
+--  == Sizing
+--
+--  * '_sizingBand' - 'BoxSizingBand' containing width, height, min/max constraints (all transitionable)
+--
+--  @
+--  -- Using shorthand
+--  w .~~ TWSize_Full           -- width: 100%
+--  h .~~ pix 400               -- height: 400px
+--  maxW .~~ TWSize_Screen      -- max-width: 100vw
+--  minH .~~ pix 200            -- min-height: 200px
+--
+--  -- Fractional widths
+--  w .~~ TWFraction 11 D12     -- width: 11/12
+--  @
+--
+--  == Borders
+--
+--  * '_border' - 'BorderConfig' with radius, width, color, style, rings, outlines (most transitionable)
+--
+--  @
+--  -- Using shorthand
+--  br .~~ R_Lg                    -- rounded-lg (all corners)
+--  br_t .~~ R_Md                  -- rounded-t-md (top corners)
+--  bw .~~ B2                      -- border-2 (all sides)
+--  bw_t .~~ B1                    -- border-t (top only)
+--  bc .~~ Gray C300               -- border-gray-300 (all sides)
+--
+--  -- Full path for fine control
+--  border . radius . borderRadius_tr .~~ R_Lg  -- Top-right corner only
+--  border . bWidth . t .~~ B2                  -- Top border width
+--  border . bColor . allS .~~ Gray C200        -- All sides border color
+--  @
+--
+--  == Visual Effects
+--
+--  * '_shadow' - Box shadow (transitionable)
+--
+--  @
+--  shadow .~~ Shadow_Md
+--
+--  -- With hover transition
+--  shadow .~^ [ (\"def\", noTransition Shadow_Sm)
+--             , (\"hover\", Shadow_Lg \`withTransition\` Duration_200)
+--             ]
+--  @
+--
+--  == Transforms
+--
+--  * '_transform' - 'TransformConfig' with rotate, scale, translate, skew, origin (all transitionable)
+--
+--  @
+--  -- Simple rotation
+--  transform . rotate .~~ Rotate_45
+--
+--  -- Scale with hover
+--  transform . scale .~^ [ (\"def\", noTransition Scale_100)
+--                        , (\"hover\", Scale_105 \`withTransition\` Duration_300)
+--                        ]
+--
+--  -- Translation
+--  transform . translateX .~~ Translate_TWSize (TWSize 4)
+--  transform . translateY .~~ Translate_Fraction 1 D2  -- 50%
+--  @
+--
+--  == Positioning
+--
+--  * '_position' - Tuple of ('Justify', 'Align') for content positioning
+--
+--  @
+--  position .~~ (J_Center, A_Center)  -- Center content
+--  position .~~ centered              -- Shorthand for above
+--  position .~~ topLeft               -- Top-left alignment
+--  @
+--
+--  == Cursor
+--
+--  * '_cursor' - Mouse cursor style
+--
+--  @
+--  cursor .~~ CursorPointer
+--  cursor .~~ CursorNotAllowed
+--  @
+--
+--  == Custom Classes
+--
+--  * '_box_custom' - Arbitrary Tailwind classes (escape hatch)
+--
+--  @
+--  custom .~ \"flex flex-col items-center gap-4\"
+--  @
+--
+--  = Responsive Design
+--
+--  Most BoxConfig properties use 'WhenTW' for responsive values:
+--
+--  @
+--  -- Different backgrounds at each breakpoint
+--  bgColor .|~ [Gray C100, Gray C200, Gray C300, Gray C400, Gray C500, Gray C600]
+--  --          mobile    sm         md         lg         xl         2xl
+--
+--  -- Responsive padding
+--  p .|~ [TWSize 2, TWSize 4, TWSize 6, TWSize 8]
+--  --    mobile    sm         md         lg (and larger)
+--  @
+--
+--  = State-Based Styling
+--
+--  Use '.~^' for hover, focus, and other states:
+--
+--  @
+--  bgColor .~^
+--    [ (\"def\", noTransition (Blue C500))
+--    , (\"hover\", Blue C600 \`withTransition\` Duration_300)
+--    , (\"focus\", Blue C700 \`withTransition\` Duration_200)
+--    ]
+--  @
+--
+--  = Type Safety
+--
+--  BoxConfig enforces type safety at compile-time:
+--
+--  * Cannot mix BoxConfig and TextConfigTW setters in same expression
+--  * Cannot set conflicting properties (e.g., @pt@ and @py@ together)
+--  * Catches duplicate screen conditions
+--
+--  @
+--  -- COMPILE ERROR: pt and py conflict (py sets both pt and pb)
+--  $(classh' [ pt .~~ TWSize 4, py .~~ TWSize 2 ])
+--  @
+--
+--  = Common Patterns
+--
+--  == Card Component
+--
+--  @
+--  $(classh'
+--    [ bgColor .~~ White
+--    , br .~~ R_Lg
+--    , shadow .~~ Shadow_Lg
+--    , p .~~ TWSize 6
+--    , border . bWidth . allS .~~ B1
+--    , border . bColor . allS .~~ Gray C200
+--    ])
+--  @
+--
+--  == Centered Container
+--
+--  @
+--  $(classh'
+--    [ w .~~ TWFraction 11 D12
+--    , mx .~~ TWSize_Auto
+--    , p .~~ TWSize 8
+--    ])
+--  @
+--
+--  == Responsive Button
+--
+--  @
+--  $(classh'
+--    [ bgColor .~^ [(\"def\", noTransition (Blue C500)), (\"hover\", Blue C600 \`withTransition\` Duration_300)]
+--    , px .|~ [TWSize 4, TWSize 6, TWSize 8]
+--    , py .|~ [TWSize 2, TWSize 3, TWSize 4]
+--    , br .~~ R_Md
+--    , shadow .~^ [(\"def\", noTransition Shadow_Sm), (\"hover\", Shadow_Md \`withTransition\` Duration_200)]
+--    ])
+--  @
+--
+--  = Shorthand Helpers
+--
+--  For more ergonomic code, use shorthand from "Classh.Shorthand":
+--
+--  @
+--  -- Instead of: padding . t .~~ TWSize 20
+--  pt .~~ TWSize 20
+--
+--  -- Instead of: border . radius . allS .~~ R_Lg
+--  br .~~ R_Lg
+--  @
+--
+--  See "Classh.Shorthand" for complete list of shortcuts.
+--
+--  = Re-Exported Modules
+--
+--  This module re-exports all box-related modules for convenience:
+--
+--  * "Classh.Color" - Color types and hex colors
+--  * "Classh.Cursor" - Cursor styles
+--  * "Classh.Box.TWSize" - Size types and helpers
+--  * "Classh.Box.Padding" - Padding configuration
+--  * "Classh.Box.Margin" - Margin configuration
+--  * "Classh.Box.SizingBand" - Width/height with constraints
+--  * "Classh.Box.Placement" - Justify and Align types
+--  * "Classh.Box.Border" - Border configuration
+--  * "Classh.Box.Shadow" - Shadow types
+--  * "Classh.Box.Transition" - Transition configuration
+--  * "Classh.Box.Transform" - Transform types and configuration
+--  * "Classh.WithTransition" - Transition builder system
+--  * "Classh.Responsive.WhenTW" - Responsive value system
+--
+--  = See Also
+--
+--  * "Classh" - Main module with Template Haskell functions
+--  * "Classh.Text" - For text-specific styling
+--  * "Classh.Setters" - Operator documentation
+--  * "Classh.Shorthand" - Ergonomic shortcuts
+--  * @docs/features/BOX_STYLING.md@ - Complete feature guide
+--  * @docs/examples/@ - Real-world examples
+--
 --------------------------------------------------------------------------------
 
 
@@ -81,6 +331,7 @@ import Classh.Internal.TShow
 import Classh.Internal.TWNum as X
 import Classh.Responsive.WhenTW as X
 import Classh.Color as X
+import Classh.Box.Gradient as X
 import Classh.Cursor as X
 import Classh.Box.TWSize as X
 import Classh.Box.Padding as X
@@ -97,20 +348,72 @@ import Control.Lens hiding ((<&>), transform)
 import Data.Default
 import qualified Data.Text as T
 
+-- | Configuration type for styling HTML box elements (divs, sections, etc.).
+--
+-- BoxConfig contains all visual styling properties for HTML elements except
+-- text-specific properties (which use 'Classh.Text.TextConfigTW').
+--
+-- === Field Overview
+--
+-- * Grid: '_colStart', '_colSpan'
+-- * Background: '_bgColor' (transitionable), '_bgOpacity' (transitionable)
+-- * Spacing: '_padding' (transitionable), '_margin' (transitionable)
+-- * Sizing: '_sizingBand' (width, height, min/max - transitionable)
+-- * Borders: '_border' (radius, width, color, style, rings)
+-- * Layout: '_position' (justify, align)
+-- * Effects: '_shadow' (transitionable)
+-- * Interaction: '_cursor'
+-- * Transforms: '_transform' (rotate, scale, translate, skew - transitionable)
+-- * Escape hatch: '_box_custom'
+--
+-- === Examples
+--
+-- @
+-- -- Simple box
+-- def & bgColor .~~ Blue C500 & p .~~ TWSize 4
+--
+-- -- Card component
+-- def
+--   & bgColor .~~ White
+--   & br .~~ R_Lg
+--   & shadow .~~ Shadow_Lg
+--   & p .~~ TWSize 6
+--
+-- -- Responsive container
+-- def
+--   & w .|~ [TWSize_Full, TWSize' (TWSize 64), TWSize' (TWSize 80)]
+--   & mx .~~ TWSize_Auto
+-- @
+--
+-- @since 0.1.0.0
 data BoxConfig = BoxConfig
   { _colStart :: WhenTW Int
+    -- ^ Grid column start position (1-12). Default: empty (no grid positioning)
   , _colSpan :: WhenTW Int
-  , _bgColor :: WhenTW (WithTransition Color)  -- Transitionable!
-  , _bgOpacity :: WhenTW (WithTransition Int)  -- Transitionable! (1 5 10 .. 100 -- def == 519)
+    -- ^ Grid column span (1-12). Default: empty (no grid span)
+  , _bgColor :: WhenTW (WithTransition GradientColor)
+    -- ^ Background color or gradient (transitionable). Default: empty (no background)
+    -- Use 'solid' for simple colors, or gradient helpers like 'linearGradient'
+  , _bgOpacity :: WhenTW (WithTransition Int)
+    -- ^ Background opacity 1-100 (transitionable). Default: empty (100% opacity)
   , _padding :: BoxPadding
+    -- ^ Padding on all sides (transitionable). See 'BoxPadding' for details
   , _margin :: BoxMargin
+    -- ^ Margin on all sides (transitionable). See 'BoxMargin' for details
   , _sizingBand :: BoxSizingBand
-  , _border :: BorderConfig -- { rounded, thickness, etc .. }
+    -- ^ Width, height, and size constraints (transitionable). See 'BoxSizingBand'
+  , _border :: BorderConfig
+    -- ^ Border configuration (radius, width, color, style, rings, outlines)
   , _position :: WhenTW (Justify, Align)
-  , _shadow :: WhenTW (WithTransition BoxShadow)  -- Transitionable!
+    -- ^ Content positioning with justify and align
+  , _shadow :: WhenTW (WithTransition BoxShadow)
+    -- ^ Box shadow (transitionable). Default: empty (no shadow)
   , _cursor :: WhenTW CursorStyle
-  , _transform :: TransformConfig  -- All transform properties (rotate, scale, translate, skew, origin)
+    -- ^ Mouse cursor style. Default: empty (default cursor)
+  , _transform :: TransformConfig
+    -- ^ All CSS transforms (rotate, scale, translate, skew, origin - transitionable)
   , _box_custom :: T.Text
+    -- ^ Arbitrary custom Tailwind classes. Default: empty string
   }
   deriving Show
 
@@ -133,7 +436,7 @@ instance CompileStyle BoxConfig where
       , compileSizingBand (_sizingBand cfg)
       , compilePadding (_padding cfg)
       , compileMargin (_margin cfg)
-      , compileWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
+      , compileBgColor (_bgColor cfg)
       , compileWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
       , compileWithTransitionTW (_shadow cfg) showTW Transition_Shadow
       , compileWhenTW (_cursor cfg) showTW
@@ -214,7 +517,7 @@ instance ShowTW BoxConfig where
   showTW cfg = foldr (<&>) mempty
    [ renderWhenTW (_colStart cfg) ((<>) "col-start-" . tshow)
    , renderWhenTW (_colSpan cfg) ((<>) "col-span-" . tshow)
-   , renderWithTransitionTW (_bgColor cfg) ((<>) "bg-" . showTW) Transition_Colors
+   , renderBgColorTW (_bgColor cfg)
    , renderWithTransitionTW (_bgOpacity cfg) ((<>) "bg-opacity-" . tshow) Transition_Opacity
    , showTW . _border $ cfg
    , showTW . _sizingBand $ cfg
@@ -249,3 +552,48 @@ instance Semigroup BoxConfig where
     , _transform  = _transform a <> _transform b
     , _box_custom = _box_custom a <> _box_custom b
     }
+
+-- | Render a GradientColor for bgColor without any prefix.
+-- Returns the raw class(es) that need prefixing.
+renderBgColorRaw :: GradientColor -> T.Text
+renderBgColorRaw (SolidColor color) = "bg-" <> showTW color
+renderBgColorRaw (GradientColor cfg) = showTW cfg
+
+-- | Apply a prefix to each space-separated class.
+-- "hover:" "bg-gradient-to-r from-blue-500" -> "hover:bg-gradient-to-r hover:from-blue-500"
+applyPrefixToClasses :: T.Text -> T.Text -> T.Text
+applyPrefixToClasses prefix classes =
+  T.intercalate " " $ fmap (\c -> prefix <> c) $ T.words classes
+
+-- | Custom render for bgColor that handles gradient multi-class output.
+-- Gradients produce multiple space-separated classes that each need
+-- the responsive/state prefix applied.
+renderBgColorTW :: WhenTW (WithTransition GradientColor) -> T.Text
+renderBgColorTW tws = foldr (<&>) mempty $
+  fmap (\(c, WithTransition val mTransCfg) ->
+    let prefix = if c == "def" then "" else (c <> ":")
+        classes = renderBgColorRaw val
+        valueClasses = applyPrefixToClasses prefix classes
+        transitionClasses = case mTransCfg of
+          Nothing -> mempty
+          Just cfg ->
+            let cssProp = transitionPropertyToCSSName Transition_Colors
+                duration = T.drop 9 $ tshow (_transitionDuration cfg)
+                timing = transitionTimingToCSSName (_transitionTiming cfg)
+                delay = T.drop 6 $ tshow (_transitionDelay cfg)
+                transValue = cssProp <> "_" <> duration <> "ms_" <> timing <> "_" <> delay <> "ms"
+            in prefix <> "[transition:" <> transValue <> "]"
+    in valueClasses <&> transitionClasses
+  ) tws
+
+-- | Custom compile for bgColor with duplicate checking.
+compileBgColor :: WhenTW (WithTransition GradientColor) -> Either T.Text T.Text
+compileBgColor tws = case checkDuplicates $ fmap fst tws of
+  Left e -> Left e
+  Right () -> Right $ renderBgColorTW tws
+  where
+    checkDuplicates [] = Right ()
+    checkDuplicates (s:ss) =
+      if elem s ss
+      then Left $ s <> " exists twice"
+      else checkDuplicates ss
