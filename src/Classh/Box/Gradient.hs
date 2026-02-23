@@ -87,7 +87,9 @@ data GradientDirection
 newtype StopPosition = StopPosition Int
   deriving (Show, Eq)
 
--- | A color stop with optional opacity and position.
+-- | A color stop with optional position.
+--
+-- Uses 'ColorWithOpacity' which embeds opacity directly in the color.
 --
 -- === Examples
 --
@@ -98,8 +100,7 @@ newtype StopPosition = StopPosition Int
 -- stopAtWithOpacity (hex "181422") 90 0  -- Opacity + position
 -- @
 data ColorStop = ColorStop
-  { _stop_color    :: Color
-  , _stop_opacity  :: Maybe Int        -- ^ Opacity value 0-100 (optional)
+  { _stop_color    :: ColorWithOpacity  -- ^ Color with optional opacity
   , _stop_position :: Maybe StopPosition
   } deriving (Show, Eq)
 
@@ -119,19 +120,18 @@ data GradientConfig = GradientConfig
 -- === Examples
 --
 -- @
--- SolidColor White                          -- bg-white
--- SolidColorWithOpacity (withOpacity (hex "1e40af") 50)  -- bg-[#1e40af]/50
--- GradientColor ...                         -- bg-gradient-to-r from-...
+-- solidColor White                    -- bg-white
+-- solidColorOpacity (hex "1e40af") 50 -- bg-[#1e40af]/50
+-- linearGradient To_R ...             -- bg-gradient-to-r from-...
 -- @
 data GradientColor
-  = SolidColor Color
-  | SolidColorWithOpacity ColorWithOpacity  -- ^ Solid color with opacity (e.g., @bg-[#hex]/50@)
+  = SolidColor ColorWithOpacity  -- ^ Solid color (with optional opacity via ColorWithOpacity)
   | GradientColor GradientConfig
   deriving (Show, Eq)
 
 -- | Default is transparent solid color
 instance Default GradientColor where
-  def = SolidColor Transparent
+  def = SolidColor (color Transparent)
 
 instance ShowTW GradientDirection where
   showTW To_T  = "to-t"
@@ -146,13 +146,12 @@ instance ShowTW GradientDirection where
 instance ShowTW StopPosition where
   showTW (StopPosition p) = tshow p <> "%"
 
--- | Helper to render a color stop with optional opacity and position.
+-- | Helper to render a color stop with position.
 -- Generates output like @from-blue-500 from-10%@, @via-pink-500/50@, or @to-[#hex]/90 to-100%@
 renderStop :: T.Text -> ColorStop -> T.Text
-renderStop prefix (ColorStop color mOpacity mpos) =
-  let colorPart = showTW color <> maybe "" (\o -> "/" <> tshow o) mOpacity
-  in prefix <> "-" <> colorPart <>
-     maybe "" (\(StopPosition p) -> " " <> prefix <> "-" <> tshow p <> "%") mpos
+renderStop prefix (ColorStop cwo mpos) =
+  prefix <> "-" <> showTW cwo <>
+  maybe "" (\(StopPosition p) -> " " <> prefix <> "-" <> tshow p <> "%") mpos
 
 instance ShowTW GradientConfig where
   showTW (GradientConfig dir from mvia mto) =
@@ -162,8 +161,7 @@ instance ShowTW GradientConfig where
     maybe "" (\t -> " " <> renderStop "to" t) mto
 
 instance ShowTW GradientColor where
-  showTW (SolidColor color) = showTW color
-  showTW (SolidColorWithOpacity cwo) = showTW cwo  -- e.g., "[#1e40af]/50"
+  showTW (SolidColor cwo) = showTW cwo
   showTW (GradientColor cfg) = showTW cfg
 
 --------------------------------------------------------------------------------
@@ -181,7 +179,7 @@ instance ShowTW GradientColor where
 -- bgColor .~~ solidColor (Blue C500)
 -- @
 solidColor :: Color -> GradientColor
-solidColor = SolidColor
+solidColor c = SolidColor (color c)
 
 -- | Create a solid color with opacity.
 --
@@ -197,15 +195,15 @@ solidColor = SolidColor
 -- -- Generates: bg-blue-500/50
 -- @
 solidColorOpacity :: Color -> Int -> GradientColor
-solidColorOpacity c opacity = SolidColorWithOpacity (withOpacity c opacity)
+solidColorOpacity c opacity = SolidColor (withOpacity c opacity)
 
 -- | Create a color stop without opacity or position.
 --
 -- @
--- stop White  -- ColorStop White Nothing Nothing
+-- stop White  -- ColorStop (color White) Nothing
 -- @
 stop :: Color -> ColorStop
-stop c = ColorStop c Nothing Nothing
+stop c = ColorStop (color c) Nothing
 
 -- | Create a color stop at a specific position (0-100%).
 --
@@ -213,7 +211,7 @@ stop c = ColorStop c Nothing Nothing
 -- stopAt (Blue C500) 30  -- Blue at 30%
 -- @
 stopAt :: Color -> Int -> ColorStop
-stopAt c p = ColorStop c Nothing (Just $ StopPosition p)
+stopAt c p = ColorStop (color c) (Just $ StopPosition p)
 
 -- | Create a color stop with opacity but no position.
 --
@@ -221,7 +219,7 @@ stopAt c p = ColorStop c Nothing (Just $ StopPosition p)
 -- stopWithOpacity (hex "181422") 90  -- [#181422]/90
 -- @
 stopWithOpacity :: Color -> Int -> ColorStop
-stopWithOpacity c opacity = ColorStop c (Just opacity) Nothing
+stopWithOpacity c opacity = ColorStop (withOpacity c opacity) Nothing
 
 -- | Create a color stop with both opacity and position.
 --
@@ -229,7 +227,7 @@ stopWithOpacity c opacity = ColorStop c (Just opacity) Nothing
 -- stopAtWithOpacity (hex "181422") 90 0  -- [#181422]/90 at 0%
 -- @
 stopAtWithOpacity :: Color -> Int -> Int -> ColorStop
-stopAtWithOpacity c opacity pos = ColorStop c (Just opacity) (Just $ StopPosition pos)
+stopAtWithOpacity c opacity pos = ColorStop (withOpacity c opacity) (Just $ StopPosition pos)
 
 -- | Create a two-color linear gradient.
 --

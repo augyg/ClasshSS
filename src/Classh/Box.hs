@@ -556,7 +556,7 @@ instance Semigroup BoxConfig where
 -- | Render a GradientColor for bgColor without any prefix.
 -- Returns the raw class(es) that need prefixing.
 renderBgColorRaw :: GradientColor -> T.Text
-renderBgColorRaw (SolidColor color) = "bg-" <> showTW color
+renderBgColorRaw (SolidColor cwo) = "bg-" <> showTW cwo
 renderBgColorRaw (GradientColor cfg) = showTW cfg
 
 -- | Apply a prefix to each space-separated class.
