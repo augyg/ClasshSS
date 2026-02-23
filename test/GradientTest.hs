@@ -74,6 +74,28 @@ testDirectionL = def & bgColor .~~ linearGradient To_L (Blue C500) White
 testDirectionTL :: BoxConfig
 testDirectionTL = def & bgColor .~~ linearGradient To_TL (Blue C500) White
 
+-- Test 10: Solid color with opacity
+testSolidColorOpacity :: BoxConfig
+testSolidColorOpacity = def
+  & bgColor .~~ solidColorOpacity (hex "221326") 87
+
+-- Test 11: Gradient stop with opacity
+testStopWithOpacity :: BoxConfig
+testStopWithOpacity = def
+  & bgColor .~~ linearGradientPos To_BR
+      (stopAtWithOpacity (hex "181422") 90 0)
+      (stopAt (hex "281C40") 100)
+
+-- Test 12: Named color with opacity
+testNamedColorOpacity :: BoxConfig
+testNamedColorOpacity = def
+  & bgColor .~~ solidColorOpacity (Blue C500) 50
+
+-- Test 13: color helper (no opacity suffix)
+testColorHelper :: BoxConfig
+testColorHelper = def
+  & bgColor .~~ solidColor White
+
 testCase :: String -> BoxConfig -> T.Text -> IO Bool
 testCase name cfg expected = do
   putStrLn $ "\n" ++ replicate 80 '-'
@@ -155,6 +177,22 @@ main = do
     , testCase "Direction: to-tl"
         testDirectionTL
         "bg-gradient-to-tl from-blue-500 to-white"
+
+    , testCase "Solid color with opacity (hex)"
+        testSolidColorOpacity
+        "bg-[#221326]/87"
+
+    , testCase "Gradient stop with opacity"
+        testStopWithOpacity
+        "bg-gradient-to-br from-[#181422]/90 from-0% to-[#281C40] to-100%"
+
+    , testCase "Named color with opacity"
+        testNamedColorOpacity
+        "bg-blue-500/50"
+
+    , testCase "color helper (no opacity suffix)"
+        testColorHelper
+        "bg-white"
     ]
 
   putStrLn ""

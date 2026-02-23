@@ -61,14 +61,14 @@ testMargin = def
 testBorder :: BoxConfig
 testBorder = def
   & border . bWidth . b .~~ B2
-  & border . bColor . allS .~~ Red C500
+  & border . bColor . allS .~~ color (Red C500)
   & border . radius . borderRadius_tr .~~ R_Lg
 
 -- Border with transitions
 testBorderTransitions :: BoxConfig
 testBorderTransitions = def
-  & border . bColor . allS .~^ [ ("def", noTransition (Blue C500))
-                                , ("hover", Red C500 `withTransition` Duration_200)
+  & border . bColor . allS .~^ [ ("def", noTransition (color (Blue C500)))
+                                , ("hover", color (Red C500) `withTransition` Duration_200)
                                 ]
 
 -- Shadow tests

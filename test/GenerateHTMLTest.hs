@@ -50,9 +50,9 @@ testBgAllStates = def
 testBorderAllStates :: BoxConfig
 testBorderAllStates = def
   & border . bWidth . allS .~~ B4
-  & border . bColor . allS .~^ [ ("def", noTransition (Gray C400))
-                                , ("hover", Purple C500 `withTransition` Duration_300 `withTiming` Ease_InOut)
-                                , ("focus", Yellow C500 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & border . bColor . allS .~^ [ ("def", noTransition (color (Gray C400)))
+                                , ("hover", color (Purple C500) `withTransition` Duration_300 `withTiming` Ease_InOut)
+                                , ("focus", color (Yellow C500) `withTransition` Duration_300 `withTiming` Ease_InOut)
                                 ]
 
 testCombined :: BoxConfig
@@ -62,9 +62,9 @@ testCombined = def
                 , ("focus", solidColor (Green C600) `withTransition` Duration_300 `withTiming` Ease_InOut)
                 ]
   & border . bWidth . allS .~~ B4
-  & border . bColor . allS .~^ [ ("def", noTransition (Blue C800))
-                                , ("hover", Blue C600 `withTransition` Duration_300 `withTiming` Ease_InOut)
-                                , ("focus", Green C800 `withTransition` Duration_300 `withTiming` Ease_InOut)
+  & border . bColor . allS .~^ [ ("def", noTransition (color (Blue C800)))
+                                , ("hover", color (Blue C600) `withTransition` Duration_300 `withTiming` Ease_InOut)
+                                , ("focus", color (Green C800) `withTransition` Duration_300 `withTiming` Ease_InOut)
                                 ]
 
 testResponsive :: BoxConfig
@@ -112,8 +112,8 @@ testStackedTransitions = def
     ]
   & border . bWidth . allS .~~ B2
   & border . bColor . allS .~^
-    [ ("def",   Gray C600   `withTransition` Duration_300)
-    , ("hover", Green C400  `withTransition` Duration_200)
+    [ ("def",   color (Gray C600)   `withTransition` Duration_300)
+    , ("hover", color (Green C400)  `withTransition` Duration_200)
     ]
 
 testDelayShowcase :: BoxConfig
