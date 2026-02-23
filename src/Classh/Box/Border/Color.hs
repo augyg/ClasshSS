@@ -23,13 +23,13 @@ import Control.Lens (lens, makeLenses)
 -- > -- With transitions:
 -- > elClass "div" $(classh' [ bc_t .~^ [("def", Black), ("hover", Red `withTransition` Duration_300)] ])
 data BorderColorSides = BorderColorSides
-  { _borderColor_l :: WhenTW (WithTransition Color)
+  { _borderColor_l :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-l-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_r :: WhenTW (WithTransition Color)
+  , _borderColor_r :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-r-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_t :: WhenTW (WithTransition Color)
+  , _borderColor_t :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-t-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_b :: WhenTW (WithTransition Color)
+  , _borderColor_b :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color
   } deriving Show
 
@@ -48,8 +48,8 @@ instance ShowTW BorderColorSides where
 makeLenses ''BorderColorSides
 
 -- | Like border-'Color', eg border-white
--- Now uses WithTransition Color so .~~ will auto-wrap, and .~^ allows transitions
-instance SetSides BorderColorSides (WithTransition Color) where
+-- Now uses WithTransition ColorWithOpacity so .~~ will auto-wrap, and .~^ allows transitions
+instance SetSides BorderColorSides (WithTransition ColorWithOpacity) where
   l = borderColor_l
   r = borderColor_r
   t = borderColor_t

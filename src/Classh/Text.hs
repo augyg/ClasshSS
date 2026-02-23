@@ -368,8 +368,8 @@ data TextConfigTW = TextConfigTW
     -- ^ Font weight (Thin through Black_TextWeight). Default: empty (browser default)
   , _text_font :: WhenTW Font
     -- ^ Font family (Sans, Serif, Mono, or Font_Custom \"Name\"). Default: empty (browser default)
-  , _text_color :: WhenTW Color
-    -- ^ Text color. Default: empty (browser default, usually black)
+  , _text_color :: WhenTW ColorWithOpacity
+    -- ^ Text color with optional opacity. Default: empty (browser default, usually black)
   , _text_decoration :: TextDecorationTW
     -- ^ Text decoration (underline, overline, strikethrough, color, style, thickness, offset)
   , _text_style :: WhenTW FontStyle

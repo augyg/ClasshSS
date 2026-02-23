@@ -54,7 +54,7 @@ data RingWidth
 -- | Ring configuration (transitionable)
 data RingConfig = RingConfig
   { _ringWidth :: WhenTW (WithTransition RingWidth)
-  , _ringColor :: WhenTW (WithTransition Color)
+  , _ringColor :: WhenTW (WithTransition ColorWithOpacity)
   , _ringOpacity :: WhenTW (WithTransition Int)  -- 0-100
   } deriving Show
 

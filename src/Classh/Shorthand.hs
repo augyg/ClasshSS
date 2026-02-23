@@ -60,7 +60,7 @@ bw_x = border . bWidth . x
 bw = border . bWidth . allS
 
 -- | Set border color side(s)
-bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Setter BoxConfig (WhenTW (WithTransition Color))
+bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Setter BoxConfig (WhenTW (WithTransition ColorWithOpacity))
 bc_r = border . bColor . r 
 bc_l = border . bColor . l
 bc_t = border . bColor . t

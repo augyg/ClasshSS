@@ -71,7 +71,7 @@ instance ShowTW TextDecorationTW where
 data TextDecorationTW = TextDecorationTW
   { _textDec_line :: WhenTW TextDecLineType
   -- ^ https://tailwindcss.com/docs/text-decoration
-  , _textDec_color :: WhenTW Color
+  , _textDec_color :: WhenTW ColorWithOpacity
   -- ^ https://tailwindcss.com/docs/text-decoration-color
   , _textDec_style :: WhenTW TextDecStyle
   -- ^ https://tailwindcss.com/docs/text-decoration-style
