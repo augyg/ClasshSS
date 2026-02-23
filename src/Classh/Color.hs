@@ -17,7 +17,17 @@
 -- @
 --------------------------------------------------------------------------------
 
-module Classh.Color where
+module Classh.Color
+  ( -- * Color Types
+    Color(..)
+  , ColorNum(..)
+  , Hex(..)
+    -- * Color with Opacity
+  , ColorWithOpacity(..)
+  , withOpacity
+    -- * Hex Helper
+  , hex
+  ) where
 
 import Classh.Class.ShowTW
 import Classh.Internal.TShow
@@ -72,6 +82,31 @@ data Color
   | Color_Custom Hex
   deriving (Show, Eq)
 
+-- | Color with opacity (0-100).
+--
+-- Renders using Tailwind's @/opacity@ syntax, e.g., @bg-blue-500/50@.
+--
+-- === Example
+--
+-- @
+-- withOpacity (hex "1e40af") 50
+-- -- Renders as: [#1e40af]/50
+-- -- In bgColor context: bg-[#1e40af]/50
+-- @
+data ColorWithOpacity = ColorWithOpacity
+  { _cwo_color   :: Color
+  , _cwo_opacity :: Int  -- ^ Opacity value 0-100
+  } deriving (Show, Eq)
+
+-- | Create a color with opacity.
+--
+-- @
+-- withOpacity (Blue C500) 50  -- blue-500/50
+-- withOpacity (hex "1e40af") 87  -- [#1e40af]/87
+-- @
+withOpacity :: Color -> Int -> ColorWithOpacity
+withOpacity = ColorWithOpacity
+
 -- | Eg. see https://tailwindcss.com/docs/background-color
 data ColorNum
  = C50
@@ -100,3 +135,8 @@ instance ShowTW Color where
   showTW color = case T.words $ tshow color of
     c:(mag):[] -> (T.toLower c) <> "-" <> (T.drop 1 mag) -- T.words $ tshow color
     _ -> "ClasshSS: failed on input" <> (tshow color)
+
+-- | Renders as @color/opacity@, e.g., @blue-500/50@ or @[#1e40af]/87@
+instance ShowTW ColorWithOpacity where
+  showTW (ColorWithOpacity color opacity) =
+    showTW color <> "/" <> tshow opacity
