@@ -100,7 +100,7 @@ minH :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
 minH = sizingBand . minSize . heightC
 
 -- | Set margin on a given side(s)
-mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW (WithTransition TWSize))
+mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 mt = margin . t
 mb = margin . b
 ml = margin . l
