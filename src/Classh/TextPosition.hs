@@ -1,41 +1,57 @@
+-- |
+-- Module      : Classh.TextPosition
+-- Description : Text position and layout properties
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.TextPosition
-  ( module X
-  -- TODO
+  ( module Clamp
+  , module Content
+  , module Hyphen
+  , module Lead
+  , module TAlign
+  , module VAlign
+  , module TOverflow
+  , module Track
+  , module WhiteSpace
+  , module WordBreak
+  , module Wrap
   , TextPosition(..)
-  , tp_track 
+  , tp_track
   , tp_clamp
   , tp_lineHeight
-  , tp_position  
-  , tp_overflow  
-  , tp_wrap      
-  , tp_indent    
-  , tp_wordBreak 
+  , tp_position
+  , tp_overflow
+  , tp_wrap
+  , tp_indent
+  , tp_wordBreak
   , tp_whiteSpace
-  , tp_hyphen    
-  , tp_content   
-  , tp_custom    
+  , tp_hyphen
+  , tp_content
+  , tp_custom
   )
   where
 
-import Classh.TextPosition.Clamp as X
-import Classh.TextPosition.Content as X
-import Classh.TextPosition.Hyphen as X
-import Classh.TextPosition.Lead as X
-import Classh.TextPosition.TAlign as X
-import Classh.TextPosition.VAlign as X
-import Classh.TextPosition.TOverflow as X
-import Classh.TextPosition.Track as X
-import Classh.TextPosition.WhiteSpace as X
-import Classh.TextPosition.WordBreak as X
-import Classh.TextPosition.Wrap as X
+import Classh.TextPosition.Clamp as Clamp
+import Classh.TextPosition.Content as Content
+import Classh.TextPosition.Hyphen as Hyphen
+import Classh.TextPosition.Lead as Lead
+import Classh.TextPosition.TAlign as TAlign
+import Classh.TextPosition.VAlign as VAlign
+import Classh.TextPosition.TOverflow as TOverflow
+import Classh.TextPosition.Track as Track
+import Classh.TextPosition.WhiteSpace as WhiteSpace
+import Classh.TextPosition.WordBreak as WordBreak
+import Classh.TextPosition.Wrap as Wrap
 
-import Classh.Class.CompileStyle
-import Classh.Class.ShowTW
-import Classh.Internal.Chain
-import Classh.Box.TWSize
-import Classh.Responsive.WhenTW
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.Chain ((<&>))
+import Classh.Box.TWSize as TWSize
+import Classh.Responsive.WhenTW as WhenTW
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T 
 
 data TextPosition = TextPosition

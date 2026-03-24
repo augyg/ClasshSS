@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Margin
+--  Description :  Margin configuration for box model
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -42,17 +43,17 @@ module Classh.Box.Margin
   , marginR
   ) where
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Responsive.WhenTW
-import Classh.WithTransition
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
 
 import Classh.Box.TWSize as X
 
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > == BoxMargin [] [] [] []
 instance Default BoxMargin where

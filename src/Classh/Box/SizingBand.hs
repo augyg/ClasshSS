@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.BoxSizing
+--  Description :  Responsive sizing band configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -38,24 +39,25 @@ module Classh.Box.SizingBand
   , maxSize
   , minSize
   , size     
-  , module X
+  , module BoxSizing
+  , module BoxSizingConstraint
+  , module TWSize
   ) where
 
---- instead this will just import all pieces 
-import Classh.Box.Sizing.BoxSizing as X
-import Classh.Box.Sizing.BoxSizingConstraint as X
+import Classh.Box.Sizing.BoxSizing as BoxSizing
+import Classh.Box.Sizing.BoxSizingConstraint as BoxSizingConstraint
 
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
-import Classh.Responsive.ZipScreens
-import Classh.WithTransition
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.ZipScreens as ZipScreens
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
 
-import Classh.Box.TWSize as X
+import Classh.Box.TWSize as TWSize
 
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 
 -- move to shorthand?
 fitToContents :: (WhenTW (WithTransition TWSizeOrFraction), WhenTW (WithTransition TWSizeOrFraction))

@@ -1,3 +1,10 @@
+-- |
+-- Module      : Classh.Class.CompileStyle
+-- Description : CompileStyle typeclass for CSS compilation
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Class.CompileStyle where
 
 import qualified Data.Text as T 

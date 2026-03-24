@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Transition
+--  Description :  CSS transition configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -24,12 +25,12 @@
 
 module Classh.Box.Transition where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW (WhenTW, renderWhenTW)
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Transition property - which properties to transition

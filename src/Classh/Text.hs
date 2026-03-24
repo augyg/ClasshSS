@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text
+--  Description :  Text styling configuration type and lenses
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -260,9 +261,15 @@ module Classh.Text
   (
     -- * Core Config Type 
     TextConfigTW(..)
-    -- * Re-exports 
-  , module X
-  -- * Auto Generated Lenses 
+    -- * Re-exports
+  , module Color
+  , module Cursor
+  , module Decoration
+  , module FontStyle
+  , module Font
+  , module Size
+  , module Weight
+  -- * Auto Generated Lenses
   , text_size
   , text_weight
   , text_font
@@ -270,25 +277,25 @@ module Classh.Text
   , text_decoration
   , text_style
   , text_cursor
-  , text_custom  
+  , text_custom
   ) where
 
-import Classh.Class.HasCustom
-import Classh.Class.CompileStyle
-import Classh.Class.ShowTW
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
+import Classh.Class.HasCustom as HasCustom
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW as WhenTW
 
-import Classh.Color as X
-import Classh.Cursor as X
-import Classh.Text.Decoration as X
-import Classh.Text.FontStyle as X
-import Classh.Text.Font as X
-import Classh.Text.Size as X
-import Classh.Text.Weight as X
+import Classh.Color as Color
+import Classh.Cursor as Cursor
+import Classh.Text.Decoration as Decoration
+import Classh.Text.FontStyle as FontStyle
+import Classh.Text.Font as Font
+import Classh.Text.Size as Size
+import Classh.Text.Weight as Weight
 
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 instance ShowTW TextConfigTW where

@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Shorthand
+--  Description :  Shorthand aliases for common operations
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -29,10 +30,10 @@
 
 module Classh.Shorthand where
 
-import Classh.Text
-import Classh.Box
-import Classh.Setters
-import Classh.Class.SetSides
+import Classh.Text as Text
+import Classh.Box as Box
+import Classh.Setters as Setters
+import Classh.Class.SetSides as SetSides
 
 import Control.Lens (Lens')
 -- this is purely semantic compression for those familiar with Classh

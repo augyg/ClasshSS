@@ -1,7 +1,14 @@
+-- |
+-- Module      : Classh.TextPosition.WordBreak
+-- Description : Word break types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.TextPosition.WordBreak where
 
-import Classh.Class.ShowTW
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 
 
 -- Word Break (again, could alias Wrap)

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Color
+--  Description :  Color types and constructors for Tailwind CSS colors
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -30,10 +31,10 @@ module Classh.Color
   , hex
   ) where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Shorthand application of hex code color 

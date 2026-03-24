@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Responsive.WhenTW 
+--  Description :  Conditional responsive class application
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -22,8 +23,8 @@
 
 module Classh.Responsive.WhenTW where
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
 import qualified Data.Text as T
 
 

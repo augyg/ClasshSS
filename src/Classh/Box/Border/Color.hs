@@ -1,15 +1,22 @@
 {-# LANGUAGE FlexibleInstances #-}
 
+-- |
+-- Module      : Classh.Box.Border.Color
+-- Description : Border color types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Box.Border.Color where
 
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
-import Classh.Color
-import Classh.WithTransition
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Color as Color
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
-import Data.Default
+import Data.Default (Default(..))
 import Control.Lens (lens, makeLenses)
 
 

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.BoxSizingConstraint 
+--  Description :  Box sizing constraint types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -33,10 +34,10 @@ module Classh.Box.Sizing.BoxSizingConstraint
   ) where
 
 import Classh.Box.Sizing.DimensionConstraint as X
-import Classh.Responsive.WhenTW
-import Classh.WithTransition
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > == BoxSizingConstraint DC_none DC_none
 instance Default BoxSizingConstraint where

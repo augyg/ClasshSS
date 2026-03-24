@@ -1,0 +1,15 @@
+[forAnyModule]
+# 1 to account for the implicit Prelude import which is always open/unaliased
+allowedOpenUnaliasedImports = 1
+moduleHeaderCopyrightMustExistNonEmpty = true
+moduleHeaderDescriptionMustExistNonEmpty = true
+moduleHeaderLicenseMustExistNonEmpty = true
+moduleHeaderMaintainerMustExistNonEmpty = true
+allowedAliasUniqueness = { allAliasesUniqueExcept = [] }
+
+[[forSpecificModule]]
+moduleMatchRule = { matches = "Paths_ClasshSS" }
+moduleHeaderCopyrightMustExistNonEmpty = false
+moduleHeaderDescriptionMustExistNonEmpty = false
+moduleHeaderLicenseMustExistNonEmpty = false
+moduleHeaderMaintainerMustExistNonEmpty = false
