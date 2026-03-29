@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Decoration.Offset
+--  Description :  Text decoration offset types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -19,10 +20,10 @@
 
 module Classh.Text.Decoration.Offset where
 
-import Classh.Class.ShowTW
-import Classh.Class.IsCSS
-import Classh.Internal.CSSSize
-import Classh.Internal.TWNum
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.IsCSS (IsCSS(..))
+import Classh.Internal.CSSSize (CSSSize)
+import Classh.Internal.TWNum (TWNum (..))
 
 {-
 TODOS:
@@ -30,7 +31,7 @@ Could TWNum have a variant of CSSSize ? then this almost becomes irrelevant as a
 of the larger config?
 -}
 
-import Data.Default
+import Data.Default (Default(..))
 
 
 instance Default TextDecOffset where

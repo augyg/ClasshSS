@@ -1,7 +1,14 @@
+-- |
+-- Module      : Classh.TextPosition.Lead
+-- Description : Line height (leading) types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.TextPosition.Lead where
 
-import Classh.Class.ShowTW
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- Line Height

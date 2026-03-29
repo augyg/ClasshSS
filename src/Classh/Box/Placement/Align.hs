@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Placement.Align
+--  Description :  Alignment types for element positioning
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -31,9 +32,9 @@
 --------------------------------------------------------------------------------
 module Classh.Box.Placement.Align where
 
-import Classh.Class.ShowTW
+import Classh.Class.ShowTW (ShowTW(..))
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T 
 
 -- | > == A_Start

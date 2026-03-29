@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Margin
+--  Description :  Margin configuration for box model
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -42,17 +43,17 @@ module Classh.Box.Margin
   , marginR
   ) where
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Responsive.WhenTW
-import Classh.WithTransition
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
 
 import Classh.Box.TWSize as X
 
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > == BoxMargin [] [] [] []
 instance Default BoxMargin where
@@ -68,14 +69,16 @@ instance ShowTW BoxMargin where
 
 -- | Type representing '_margin' field of 'BoxConfig' (transitionable).
 -- | based on https://tailwindcss.com/docs/margin
+-- | Uses 'TWSizeOrFraction' instead of 'TWSize' to support 'TWSize_Auto'
+-- | (e.g. @mx .~~ TWSize_Auto@ generates @mx-auto@)
 data BoxMargin = BoxMargin
-  { _marginL :: WhenTW (WithTransition TWSize)
+  { _marginL :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: @ml@
-  , _marginR :: WhenTW (WithTransition TWSize)
+  , _marginR :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mr'
-  , _marginT :: WhenTW (WithTransition TWSize)
+  , _marginT :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mt'
-  , _marginB :: WhenTW (WithTransition TWSize)
+  , _marginB :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mb'
   } deriving Show
 
@@ -92,7 +95,7 @@ instance Semigroup BoxMargin where
 -- | This is technically an illegal lens however if you ran 2 setters which overlap so that a /= b
 -- | where a and b are the fields associated with respective separate fields, then classh' will
 -- | most likely catch the error. Additionally, there is a lens way to access any field anyways
-instance SetSides BoxMargin (WithTransition TWSize) where
+instance SetSides BoxMargin (WithTransition TWSizeOrFraction) where
   l = marginL
   r = marginR
   b = marginB

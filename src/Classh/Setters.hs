@@ -7,6 +7,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Setters
+--  Description :  Lens setters for BoxConfig and TextConfigTW
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -35,9 +36,9 @@
 
 module Classh.Setters where
 
-import Classh.Responsive.WhenTW
-import Classh.Responsive.ZipScreens
-import Classh.WithTransition
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Responsive.ZipScreens as ZipScreens
+import Classh.WithTransition as WT
 import Control.Lens hiding (only)
 
 -- | Append a list to existing WhenTW field of a config (for non-transitionable fields)

@@ -4,6 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Border
+--  Description :  Border styling configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -26,7 +27,12 @@
 --------------------------------------------------------------------------------
 
 module Classh.Box.Border
-  ( module X
+  ( module BStyle
+  , module BWidth
+  , module BColor
+  , module BRadius
+  , module BRing
+  , module BOutline
   -- * The Border type
   , BorderConfig(..)
   -- * Border Sub-Types
@@ -46,19 +52,19 @@ module Classh.Box.Border
   , outline
   ) where
 
-import Classh.Box.Border.Style as X
-import Classh.Box.Border.Width as X
-import Classh.Box.Border.Color as X
-import Classh.Box.Border.Radius as X
-import Classh.Box.Ring as X
-import Classh.Box.Outline as X
+import Classh.Box.Border.Style as BStyle
+import Classh.Box.Border.Width as BWidth
+import Classh.Box.Border.Color as BColor
+import Classh.Box.Border.Radius as BRadius
+import Classh.Box.Ring as BRing
+import Classh.Box.Outline as BOutline
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
 
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 
 --------------------------------------------------------------------------------
 -- |

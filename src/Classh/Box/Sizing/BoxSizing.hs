@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.BoxSizing
+--  Description :  Box sizing types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -34,13 +35,13 @@ module Classh.Box.Sizing.BoxSizing
   , height
   ) where 
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
-import Classh.Box.TWSize
-import Classh.WithTransition
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Box.TWSize as TWSize
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
-import Data.Default
+import Data.Default (Default(..))
 import Control.Lens (makeLenses)
 
 -- | Holds information on target sizing (transitionable), which will be overrided by constraints

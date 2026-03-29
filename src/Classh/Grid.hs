@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Grid
+--  Description :  Grid layout column types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -20,9 +21,9 @@
 
 module Classh.Grid where
 
-import Classh.Class.ShowTW
+import Classh.Class.ShowTW (ShowTW(..))
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | The number of Columns to split a row into. Classh will detect the use of this construct

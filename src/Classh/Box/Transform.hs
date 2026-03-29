@@ -2,6 +2,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Transform
+--  Description :  CSS transform types and configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -41,18 +42,18 @@ module Classh.Box.Transform
   , transformOrigin
   ) where
 
-import Classh.Class.ShowTW
-import Classh.Class.CompileStyle
-import Classh.Internal.TShow
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
-import Classh.WithTransition
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Internal.TShow (tshow)
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
 import Classh.Box.TWSize (TWSize, DivInt(..))
 import Classh.Internal.CSSSize (CSSSize)
 import Classh.Class.IsCSS (renderCSS)
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Scale transform

@@ -7,6 +7,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh
+--  Description :  Type-safe Tailwind CSS class generation via Template Haskell
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -331,7 +332,22 @@ module Classh
   , classhV'
   , boxCSS
   -- * Re-Exports
-  , module X
+  , module Box
+  , module Text
+  , module TextPosition
+  , module Grid
+  , module ZipScreens
+  , module Setters
+  , module Shorthand
+  , module ShowTW
+  , module CompileStyle
+  , module HasCSSSize
+  , module HasCustom
+  , module IsCSS
+  , module SetSides
+  , module Chain
+  , module TShow
+  , module Utils
   -- * Extend
   , alsoF
   , also
@@ -346,31 +362,25 @@ module Classh
   , CompiledClassh
   ) where
 
--- import Classh.Border
--- import Classh.ShowTW
--- import Classh.WhenTW
-import Classh.Box as X
-import Classh.Text as X
-import Classh.TextPosition as X
-import Classh.Grid as X
---import Classh.Cursor as X
---import Classh.Color as X
---import Classh.Responsive.WhenTW as X
-import Classh.Responsive.ZipScreens as X
-import Classh.Setters as X
-import Classh.Shorthand as X
-import Classh.Class.ShowTW as X
-import Classh.Class.CompileStyle as X
-import Classh.Class.HasCSSSize as X
-import Classh.Class.HasCustom as X
-import Classh.Class.IsCSS as X
-import Classh.Class.SetSides as X
-import Classh.Internal.Chain as X
-import Classh.Internal.TShow as X
-import Classh.Internal.Utils as X
+import Classh.Box as Box
+import Classh.Text as Text
+import Classh.TextPosition as TextPosition
+import Classh.Grid as Grid
+import Classh.Responsive.ZipScreens as ZipScreens
+import Classh.Setters as Setters
+import Classh.Shorthand as Shorthand
+import Classh.Class.ShowTW as ShowTW
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Class.HasCSSSize as HasCSSSize
+import Classh.Class.HasCustom as HasCustom
+import Classh.Class.IsCSS as IsCSS
+import Classh.Class.SetSides as SetSides
+import Classh.Internal.Chain as Chain
+import Classh.Internal.TShow as TShow
+import Classh.Internal.Utils as Utils
 
-import Data.Default
-import "template-haskell" Language.Haskell.TH
+import Data.Default (Default(..))
+import "template-haskell" Language.Haskell.TH as TH
 import qualified Data.Text as T
 
 

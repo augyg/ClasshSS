@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Gradient
+--  Description :  CSS gradient types and constructors
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -60,11 +61,11 @@ module Classh.Box.Gradient
   , gradientFrom
   ) where
 
-import Classh.Class.ShowTW
-import Classh.Color
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Color as Color
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Direction for linear gradients.

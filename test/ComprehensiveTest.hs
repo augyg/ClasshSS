@@ -53,9 +53,9 @@ testPaddingTransitions = def
 -- Margin tests
 testMargin :: BoxConfig
 testMargin = def
-  & margin . marginL .~~ TWSize 2
-  & margin . marginR .~~ TWSize 2
-  & margin . y .~~ TWSize 4
+  & margin . marginL .~~ twSize' 2
+  & margin . marginR .~~ twSize' 2
+  & margin . y .~~ twSize' 4
 
 -- Border tests
 testBorder :: BoxConfig

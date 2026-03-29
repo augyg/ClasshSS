@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.WithTransition
+--  Description :  Transition wrapper type and operators
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -32,11 +33,11 @@
 
 module Classh.WithTransition where
 
-import Classh.Box.Transition
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
+import Classh.Box.Transition (TransitionConfig (..), TransitionDelay, TransitionDuration, TransitionProperty (..), TransitionTimingFunction (..))
+import Classh.Responsive.WhenTW (WhenTW)
+import Classh.Internal.Chain ((<&>))
 import Classh.Internal.TShow (tshow)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Wraps a value with an optional transition configuration

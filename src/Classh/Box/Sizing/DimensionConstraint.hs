@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.DimensionConstraint 
+--  Description :  Dimension constraint types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -25,9 +26,9 @@
 
 module Classh.Box.Sizing.DimensionConstraint where
 
-import Classh.Internal.TShow
-import Classh.Class.ShowTW 
-import Data.Default
+import Classh.Internal.TShow (tshow)
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- TODO: this is technically wrong: there are different classes for width vs height but oh well for now

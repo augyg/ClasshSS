@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Shorthand
+--  Description :  Shorthand aliases for common operations
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -29,10 +30,10 @@
 
 module Classh.Shorthand where
 
-import Classh.Text
-import Classh.Box
-import Classh.Setters
-import Classh.Class.SetSides
+import Classh.Text as Text
+import Classh.Box as Box
+import Classh.Setters as Setters
+import Classh.Class.SetSides as SetSides
 
 import Control.Lens (Lens')
 -- this is purely semantic compression for those familiar with Classh
@@ -100,7 +101,7 @@ minH :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
 minH = sizingBand . minSize . heightC
 
 -- | Set margin on a given side(s)
-mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW (WithTransition TWSize))
+mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 mt = margin . t
 mb = margin . b
 ml = margin . l

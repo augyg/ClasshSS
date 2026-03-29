@@ -4,6 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box
+--  Description :  Box model configuration type and lenses
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -304,7 +305,21 @@ module Classh.Box
   (
     -- * Core Config Type 
     BoxConfig(..)
-  , module X
+  , module TWNum
+  , module WhenTW
+  , module Color
+  , module Gradient
+  , module Cursor
+  , module TWSize
+  , module Padding
+  , module Margin
+  , module SizingBand
+  , module Placement
+  , module Border
+  , module Shadow
+  , module Transition
+  , module Transform
+  , module WT
   -- * Auto Generated Lenses
   , colStart
   , colSpan
@@ -321,31 +336,30 @@ module Classh.Box
   , box_custom
   ) where
 
--- Our goto module
-import Classh.Class.HasCustom
-import Classh.Class.ShowTW
-import Classh.Class.CompileStyle
-import Classh.Internal.Chain
-import Classh.Internal.TShow
+import Classh.Class.HasCustom as HasCustom
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Internal.Chain ((<&>))
+import Classh.Internal.TShow (tshow)
 
-import Classh.Internal.TWNum as X
-import Classh.Responsive.WhenTW as X
-import Classh.Color as X
-import Classh.Box.Gradient as X
-import Classh.Cursor as X
-import Classh.Box.TWSize as X
-import Classh.Box.Padding as X
-import Classh.Box.Margin as X
-import Classh.Box.SizingBand as X
-import Classh.Box.Placement as X
-import Classh.Box.Border as X
-import Classh.Box.Shadow as X
-import Classh.Box.Transition as X
-import Classh.Box.Transform as X
-import Classh.WithTransition as X
+import Classh.Internal.TWNum as TWNum
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Color as Color
+import Classh.Box.Gradient as Gradient
+import Classh.Cursor as Cursor
+import Classh.Box.TWSize as TWSize
+import Classh.Box.Padding as Padding
+import Classh.Box.Margin as Margin
+import Classh.Box.SizingBand as SizingBand
+import Classh.Box.Placement as Placement
+import Classh.Box.Border as Border
+import Classh.Box.Shadow as Shadow
+import Classh.Box.Transition as Transition
+import Classh.Box.Transform as Transform
+import Classh.WithTransition as WT
 
 import Control.Lens hiding ((<&>), transform)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Configuration type for styling HTML box elements (divs, sections, etc.).

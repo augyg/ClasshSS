@@ -4,6 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Ring
+--  Description :  Ring styling configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -28,15 +29,15 @@
 
 module Classh.Box.Ring where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
-import Classh.Color
-import Classh.WithTransition
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Color as Color
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Ring width

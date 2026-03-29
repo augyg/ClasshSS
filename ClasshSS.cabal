@@ -116,6 +116,9 @@ library
                       -->= 1.2.5 && < 1.3
     hs-source-dirs:   src
     ghc-options: -Wall -Werror -O -threaded -fno-show-valid-hole-fits
+    if impl(ghc >= 9.4)
+      build-depends: henforcer
+      ghc-options: -fplugin Henforcer
     default-language: Haskell2010
 
 test-suite transition-test

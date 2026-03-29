@@ -1,8 +1,15 @@
+-- |
+-- Module      : Classh.TextPosition.VAlign
+-- Description : Vertical alignment types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.TextPosition.VAlign where
 
 
-import Classh.Class.ShowTW
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 
 -- Vertical Align
 -- | TODO: Add Sub and Super values as Types accessed via TextConfigTW

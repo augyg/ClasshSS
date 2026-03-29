@@ -1,6 +1,13 @@
+-- |
+-- Module      : Classh.Class.HasCSSSize
+-- Description : HasCSSSize typeclass for sized types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Class.HasCSSSize where
 
-import Classh.Internal.CSSSize
+import Classh.Internal.CSSSize (CSSSize (Percent, Pixel, Rem, Vh, Vw))
 
 -- | Represents the ability to use raw CSS Sizing in a given instance/context
 class HasCSSSize tw where

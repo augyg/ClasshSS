@@ -1,17 +1,20 @@
---------------------------------------------------------------------------------
 -- |
---  Module      :  Classh.Internal.TWNum
---  common numerical system used across different Tailwind classes. This is just
---  a discrete version of Int
---------------------------------------------------------------------------------
+-- Module      : Classh.Internal.TWNum
+-- Description : Tailwind numeric value types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+--
+-- Common numerical system used across different Tailwind classes. This is just
+-- a discrete version of Int.
 
 
 module Classh.Internal.TWNum where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 

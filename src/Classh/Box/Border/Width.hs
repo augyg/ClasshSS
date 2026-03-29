@@ -1,17 +1,24 @@
 {-# LANGUAGE FlexibleInstances #-}
 
+-- |
+-- Module      : Classh.Box.Border.Width
+-- Description : Border width types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Box.Border.Width where
 
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Class.IsCSS
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
-import Classh.Internal.CSSSize
-import Classh.Internal.TShow
-import Classh.WithTransition
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Class.IsCSS (IsCSS (..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Internal.CSSSize (CSSSize)
+import Classh.Internal.TShow (tshow)
+import Classh.WithTransition as WT
 import Classh.Box.Transition (TransitionProperty(..))
-import Data.Default
+import Data.Default (Default(..))
 import Control.Lens (lens, makeLenses)
 import qualified Data.Text as T
 
