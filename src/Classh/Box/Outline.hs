@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Outline
+--  Description :  Outline styling configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -21,9 +22,9 @@
 
 module Classh.Box.Outline where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Outline style

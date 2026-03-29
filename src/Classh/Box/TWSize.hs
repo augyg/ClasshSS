@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.TWSize
+--  Description :  Tailwind spacing and sizing scale
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -28,21 +29,22 @@
 
 
 module Classh.Box.TWSize
-  ( module X
+  ( module CSSSize
+  , module DivInt
   , twSize'
   , TWSize(..)
   , TWSizeOrFraction(..)
   ) where
 
-import Classh.Class.HasCSSSize 
-import Classh.Class.ShowTW
-import Classh.Class.IsCSS
-import Classh.Internal.TShow
+import Classh.Class.HasCSSSize (HasCSSSize (..))
+import Classh.Class.ShowTW (ShowTW (..))
+import Classh.Class.IsCSS (IsCSS (..))
+import Classh.Internal.TShow (tshow)
 
-import Classh.Internal.CSSSize as X
-import Classh.Box.DivInt as X
+import Classh.Internal.CSSSize as CSSSize
+import Classh.Box.DivInt as DivInt
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Use a TWSize where the config is expecting a TWSizeOrFraction

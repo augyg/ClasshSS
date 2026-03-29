@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Size
+--  Description :  Text size scale types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -22,9 +23,9 @@
 module Classh.Text.Size where
 
 
-import Classh.Class.ShowTW
+import Classh.Class.ShowTW (ShowTW(..))
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | TODO: when this inevitably becomes its own package, make it easy to not import Defaults and make your own

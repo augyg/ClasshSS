@@ -1,8 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Ring
+--  Description :  Ring styling configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -27,13 +29,15 @@
 
 module Classh.Box.Ring where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
-import Classh.Color
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Color as Color
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Ring width
@@ -48,11 +52,11 @@ data RingWidth
   | Ring_Inset
   deriving Show
 
--- | Ring configuration
+-- | Ring configuration (transitionable)
 data RingConfig = RingConfig
-  { _ringWidth :: WhenTW RingWidth
-  , _ringColor :: WhenTW Color
-  , _ringOpacity :: WhenTW Int  -- 0-100
+  { _ringWidth :: WhenTW (WithTransition RingWidth)
+  , _ringColor :: WhenTW (WithTransition ColorWithOpacity)
+  , _ringOpacity :: WhenTW (WithTransition Int)  -- 0-100
   } deriving Show
 
 makeLenses ''RingConfig
@@ -72,9 +76,9 @@ instance Default RingConfig where
 
 instance ShowTW RingConfig where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_ringWidth cfg) showTW
-    , renderWhenTW (_ringColor cfg) ((<>) "ring-" . showTW)
-    , renderWhenTW (_ringOpacity cfg) ((<>) "ring-opacity-" . tshow)
+    [ renderWithTransitionTW (_ringWidth cfg) showTW Transition_All
+    , renderWithTransitionTW (_ringColor cfg) ((<>) "ring-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_ringOpacity cfg) ((<>) "ring-opacity-" . tshow) Transition_Opacity
     ]
 
 instance Semigroup RingConfig where

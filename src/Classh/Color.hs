@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Color
+--  Description :  Color types and constructors for Tailwind CSS colors
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -17,12 +18,23 @@
 -- @
 --------------------------------------------------------------------------------
 
-module Classh.Color where
+module Classh.Color
+  ( -- * Color Types
+    Color(..)
+  , ColorNum(..)
+  , Hex(..)
+    -- * Color with Opacity
+  , ColorWithOpacity(..)
+  , color
+  , withOpacity
+    -- * Hex Helper
+  , hex
+  ) where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Shorthand application of hex code color 
@@ -72,6 +84,41 @@ data Color
   | Color_Custom Hex
   deriving (Show, Eq)
 
+-- | Color with optional opacity (0-100).
+--
+-- Renders using Tailwind's @/opacity@ syntax when opacity is present.
+-- When opacity is @Nothing@, renders as plain color (fully opaque).
+--
+-- === Example
+--
+-- @
+-- color (Blue C500)           -- blue-500 (no opacity suffix)
+-- withOpacity (Blue C500) 50  -- blue-500/50
+-- withOpacity (hex "1e40af") 87  -- [#1e40af]/87
+-- @
+data ColorWithOpacity = ColorWithOpacity
+  { _cwo_color   :: Color
+  , _cwo_opacity :: Maybe Int  -- ^ Nothing = fully opaque, Just n = n% opacity
+  } deriving (Show, Eq)
+
+-- | Create a color without explicit opacity (fully opaque).
+--
+-- @
+-- color (Blue C500)  -- blue-500
+-- color White        -- white
+-- @
+color :: Color -> ColorWithOpacity
+color c = ColorWithOpacity c Nothing
+
+-- | Create a color with explicit opacity (0-100).
+--
+-- @
+-- withOpacity (Blue C500) 50  -- blue-500/50
+-- withOpacity (hex "1e40af") 87  -- [#1e40af]/87
+-- @
+withOpacity :: Color -> Int -> ColorWithOpacity
+withOpacity c o = ColorWithOpacity c (Just o)
+
 -- | Eg. see https://tailwindcss.com/docs/background-color
 data ColorNum
  = C50
@@ -97,6 +144,12 @@ instance ShowTW Color where
   showTW Transparent = "transparent"
   showTW Black = "black"
   showTW White = "white"
-  showTW color = case T.words $ tshow color of
-    c:(mag):[] -> (T.toLower c) <> "-" <> (T.drop 1 mag) -- T.words $ tshow color
-    _ -> "ClasshSS: failed on input" <> (tshow color)
+  showTW col = case T.words $ tshow col of
+    c:(mag):[] -> (T.toLower c) <> "-" <> (T.drop 1 mag)
+    _ -> "ClasshSS: failed on input" <> (tshow col)
+
+-- | Renders color with optional opacity suffix.
+-- @Nothing@ opacity renders plain color, @Just n@ renders @color/n@.
+instance ShowTW ColorWithOpacity where
+  showTW (ColorWithOpacity c Nothing) = showTW c
+  showTW (ColorWithOpacity c (Just o)) = showTW c <> "/" <> tshow o

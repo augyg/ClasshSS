@@ -1,30 +1,43 @@
+{-# LANGUAGE FlexibleInstances #-}
+
+-- |
+-- Module      : Classh.Box.Border.Color
+-- Description : Border color types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Box.Border.Color where
 
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
-import Classh.Color
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Color as Color
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
+import Data.Default (Default(..))
 import Control.Lens (lens, makeLenses)
 
 
--- |Holds Border 'Color' by side
--- 
+-- |Holds Border 'Color' by side (transitionable)
+--
 --  For example:
--- 
+--
 -- > elClass "div" $(classh' [ border . bColor . borderColor_t .~~ Black ])
 -- > -- Or with shorthand
 -- > elClass "div" $(classh' [ bc_t .~~ Black ])
+-- > -- With transitions:
+-- > elClass "div" $(classh' [ bc_t .~^ [("def", Black), ("hover", Red `withTransition` Duration_300)] ])
 data BorderColorSides = BorderColorSides
-  { _borderColor_l :: WhenTW Color
+  { _borderColor_l :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-l-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_r :: WhenTW Color
+  , _borderColor_r :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-r-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_t :: WhenTW Color
+  , _borderColor_t :: WhenTW (WithTransition ColorWithOpacity)
   -- ^ border-t-'Color' ... see https://tailwindcss.com/docs/border-color
-  , _borderColor_b :: WhenTW Color
-  -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color 
+  , _borderColor_b :: WhenTW (WithTransition ColorWithOpacity)
+  -- ^ border-b-'Color' ... see https://tailwindcss.com/docs/border-color
   } deriving Show
 
 instance Default BorderColorSides where
@@ -33,16 +46,17 @@ instance Default BorderColorSides where
 
 instance ShowTW BorderColorSides where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_borderColor_l cfg) ((<>) "border-l-" . showTW)
-    , renderWhenTW (_borderColor_r cfg) ((<>) "border-r-" . showTW)
-    , renderWhenTW (_borderColor_t cfg) ((<>) "border-t-" . showTW)
-    , renderWhenTW (_borderColor_b cfg) ((<>) "border-b-" . showTW)
+    [ renderWithTransitionTW (_borderColor_l cfg) ((<>) "border-l-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_r cfg) ((<>) "border-r-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_t cfg) ((<>) "border-t-" . showTW) Transition_Colors
+    , renderWithTransitionTW (_borderColor_b cfg) ((<>) "border-b-" . showTW) Transition_Colors
     ]
 
 makeLenses ''BorderColorSides
 
 -- | Like border-'Color', eg border-white
-instance SetSides BorderColorSides Color where
+-- Now uses WithTransition ColorWithOpacity so .~~ will auto-wrap, and .~^ allows transitions
+instance SetSides BorderColorSides (WithTransition ColorWithOpacity) where
   l = borderColor_l
   r = borderColor_r
   t = borderColor_t

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Cursor
+--  Description :  Cursor style types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -21,10 +22,10 @@
 
 module Classh.Cursor where
 
-import Classh.Class.ShowTW
-import Classh.Internal.Utils
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.Utils (toKebabCase)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 data CursorStyle

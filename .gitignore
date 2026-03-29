@@ -44,3 +44,7 @@ cabal.project.local~
 db*
 *.DS_Store
 static.out
+
+# Generated test files
+test-output.html
+test-transition.html

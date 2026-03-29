@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Decoration
+--  Description :  Text decoration configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -38,21 +39,25 @@ module Classh.Text.Decoration
   , textDec_thickness
   , textDec_offset
   , textDec_style
-  , module X
+  , module Color
+  , module Offset
+  , module Thickness
+  , module Style
+  , module LineType
   ) where
 
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
 
-import Classh.Color as X 
-import Classh.Text.Decoration.Offset as X
-import Classh.Text.Decoration.Thickness as X
-import Classh.Text.Decoration.Style as X
-import Classh.Text.Decoration.LineType as X
+import Classh.Color as Color
+import Classh.Text.Decoration.Offset as Offset
+import Classh.Text.Decoration.Thickness as Thickness
+import Classh.Text.Decoration.Style as Style
+import Classh.Text.Decoration.LineType as LineType
 
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > TextDecorationTW [] [] [] [] []
 instance Default TextDecorationTW where
@@ -71,7 +76,7 @@ instance ShowTW TextDecorationTW where
 data TextDecorationTW = TextDecorationTW
   { _textDec_line :: WhenTW TextDecLineType
   -- ^ https://tailwindcss.com/docs/text-decoration
-  , _textDec_color :: WhenTW Color
+  , _textDec_color :: WhenTW ColorWithOpacity
   -- ^ https://tailwindcss.com/docs/text-decoration-color
   , _textDec_style :: WhenTW TextDecStyle
   -- ^ https://tailwindcss.com/docs/text-decoration-style

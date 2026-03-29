@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Weight
+--  Description :  Font weight types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -20,10 +21,10 @@
 
 module Classh.Text.Weight where
 
-import Classh.Internal.TShow
-import Classh.Class.ShowTW
+import Classh.Internal.TShow (tshow)
+import Classh.Class.ShowTW (ShowTW(..))
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | > == Normal

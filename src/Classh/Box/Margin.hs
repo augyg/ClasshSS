@@ -1,9 +1,11 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Margin
+--  Description :  Margin configuration for box model
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -41,15 +43,17 @@ module Classh.Box.Margin
   , marginR
   ) where
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Responsive.WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
 
-import Classh.Box.TWSize as X 
+import Classh.Box.TWSize as X
 
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > == BoxMargin [] [] [] []
 instance Default BoxMargin where
@@ -57,22 +61,24 @@ instance Default BoxMargin where
 
 instance ShowTW BoxMargin where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_marginL cfg) ((<>) "ml-" . showTW)
-    , renderWhenTW (_marginR cfg) ((<>) "mr-" . showTW)
-    , renderWhenTW (_marginT cfg) ((<>) "mt-" . showTW)
-    , renderWhenTW (_marginB cfg) ((<>) "mb-" . showTW)
+    [ renderWithTransitionTW (_marginL cfg) ((<>) "ml-" . showTW) Transition_All
+    , renderWithTransitionTW (_marginR cfg) ((<>) "mr-" . showTW) Transition_All
+    , renderWithTransitionTW (_marginT cfg) ((<>) "mt-" . showTW) Transition_All
+    , renderWithTransitionTW (_marginB cfg) ((<>) "mb-" . showTW) Transition_All
     ]
 
--- | Type representing '_margin' field of 'BoxConfig'.
+-- | Type representing '_margin' field of 'BoxConfig' (transitionable).
 -- | based on https://tailwindcss.com/docs/margin
+-- | Uses 'TWSizeOrFraction' instead of 'TWSize' to support 'TWSize_Auto'
+-- | (e.g. @mx .~~ TWSize_Auto@ generates @mx-auto@)
 data BoxMargin = BoxMargin
-  { _marginL :: WhenTW TWSize
-  -- ^ see shorthand: @ml@ 
-  , _marginR :: WhenTW TWSize
+  { _marginL :: WhenTW (WithTransition TWSizeOrFraction)
+  -- ^ see shorthand: @ml@
+  , _marginR :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mr'
-  , _marginT :: WhenTW TWSize
+  , _marginT :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mt'
-  , _marginB :: WhenTW TWSize
+  , _marginB :: WhenTW (WithTransition TWSizeOrFraction)
   -- ^ see shorthand: 'mb'
   } deriving Show
 
@@ -89,7 +95,7 @@ instance Semigroup BoxMargin where
 -- | This is technically an illegal lens however if you ran 2 setters which overlap so that a /= b
 -- | where a and b are the fields associated with respective separate fields, then classh' will
 -- | most likely catch the error. Additionally, there is a lens way to access any field anyways
-instance SetSides BoxMargin TWSize where
+instance SetSides BoxMargin (WithTransition TWSizeOrFraction) where
   l = marginL
   r = marginR
   b = marginB

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Decoration.Style
+--  Description :  Text decoration style types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -20,10 +21,10 @@
 
 module Classh.Text.Decoration.Style where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | > == Solid 

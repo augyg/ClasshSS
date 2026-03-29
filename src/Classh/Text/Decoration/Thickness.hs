@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Text.Decoration.Thickness
+--  Description :  Text decoration thickness types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -19,13 +20,13 @@
 
 module Classh.Text.Decoration.Thickness where
 
-import Classh.Class.ShowTW
-import Classh.Class.IsCSS
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.IsCSS (IsCSS(..))
 
-import Classh.Internal.TWNum as X
-import Classh.Internal.CSSSize as X
+import Classh.Internal.TWNum as TWNum
+import Classh.Internal.CSSSize as CSSSize
 
-import Data.Default
+import Data.Default (Default(..))
 
 -- | > == TextDecThickness TW1 ==> "decoration-1"
 instance Default TextDecThickness where

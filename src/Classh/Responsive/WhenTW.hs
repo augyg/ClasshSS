@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Responsive.WhenTW 
+--  Description :  Conditional responsive class application
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -22,8 +23,8 @@
 
 module Classh.Responsive.WhenTW where
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
 import qualified Data.Text as T
 
 
@@ -67,3 +68,9 @@ mkConditionPrefix c = if c == "def" then "" else (c <> ":")
 -- eg. width2 = width1 + 1px
 instance Functor WhenTW' where
   fmap f whenTW = WhenTW' $ fmap (\(c,a) -> (c, f a)) $ unWhenTW whenTW
+
+-- | Render WhenTW values that are wrapped in WithTransition
+-- This extracts the value, renders it, and adds transition classes if present
+-- Note: This requires importing Classh.WithTransition and Classh.Box.Transition
+-- but we can't do that here to avoid circular dependencies
+-- So we'll define this in a separate module or inline where needed

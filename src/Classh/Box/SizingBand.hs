@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.BoxSizing
+--  Description :  Responsive sizing band configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -38,33 +39,36 @@ module Classh.Box.SizingBand
   , maxSize
   , minSize
   , size     
-  , module X
+  , module BoxSizing
+  , module BoxSizingConstraint
+  , module TWSize
   ) where
 
---- instead this will just import all pieces 
-import Classh.Box.Sizing.BoxSizing as X
-import Classh.Box.Sizing.BoxSizingConstraint as X
+import Classh.Box.Sizing.BoxSizing as BoxSizing
+import Classh.Box.Sizing.BoxSizingConstraint as BoxSizingConstraint
 
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
-import Classh.Internal.Chain
-import Classh.Responsive.ZipScreens
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.ZipScreens as ZipScreens
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
 
-import Classh.Box.TWSize as X
+import Classh.Box.TWSize as TWSize
 
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 
 -- move to shorthand?
-fitToContents :: (WhenTW TWSizeOrFraction, WhenTW TWSizeOrFraction)
-fitToContents = (only TWSize_Fit, only TWSize_Fit)
+fitToContents :: (WhenTW (WithTransition TWSizeOrFraction), WhenTW (WithTransition TWSizeOrFraction))
+fitToContents = (only (WithTransition TWSize_Fit Nothing), only (WithTransition TWSize_Fit Nothing))
 
 instance ShowTW BoxSizingBand where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_widthC . _maxSize $ cfg) ((<>) "max-w-" . showTW)
-    , renderWhenTW (_heightC . _maxSize $ cfg) ((<>) "max-h-" . showTW)
-    , renderWhenTW (_widthC . _minSize $ cfg) ((<>) "min-w-" . showTW)
-    , renderWhenTW (_heightC . _minSize $ cfg) ((<>) "min-h-" . showTW)
+    [ renderWithTransitionTW (_widthC . _maxSize $ cfg) ((<>) "max-w-" . showTW) Transition_All
+    , renderWithTransitionTW (_heightC . _maxSize $ cfg) ((<>) "max-h-" . showTW) Transition_All
+    , renderWithTransitionTW (_widthC . _minSize $ cfg) ((<>) "min-w-" . showTW) Transition_All
+    , renderWithTransitionTW (_heightC . _minSize $ cfg) ((<>) "min-h-" . showTW) Transition_All
     , showTW $ _size cfg
     ]
 

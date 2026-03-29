@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Transition
+--  Description :  CSS transition configuration
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -24,12 +25,12 @@
 
 module Classh.Box.Transition where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Classh.Internal.Chain
-import Classh.Responsive.WhenTW
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Classh.Internal.Chain ((<&>))
+import Classh.Responsive.WhenTW (WhenTW, renderWhenTW)
 import Control.Lens (makeLenses)
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Transition property - which properties to transition
@@ -58,7 +59,7 @@ data TransitionDuration
   | Duration_700
   | Duration_1000
   | Duration_Custom T.Text  -- ^ e.g., Duration_Custom "2000" for duration-[2000ms]
-  deriving Show
+  deriving (Show, Eq)
 
 -- | Transition timing function (easing)
 -- see https://v3.tailwindcss.com/docs/transition-timing-function
@@ -68,7 +69,7 @@ data TransitionTimingFunction
   | Ease_Out
   | Ease_InOut
   | Ease_Custom T.Text  -- ^ e.g., Ease_Custom "cubic-bezier(0.4,0,0.2,1)"
-  deriving Show
+  deriving (Show, Eq)
 
 -- | Transition delay
 -- see https://v3.tailwindcss.com/docs/transition-delay
@@ -83,18 +84,30 @@ data TransitionDelay
   | Delay_700
   | Delay_1000
   | Delay_Custom T.Text  -- ^ e.g., Delay_Custom "2000" for delay-[2000ms]
-  deriving Show
+  deriving (Show, Eq)
 
--- | Transition configuration
+-- | Transition configuration (simplified - no WhenTW!)
+-- When used with WithTransition, the transition property is inferred from context
+-- This prevents WhenTW nesting which cannot be rendered to valid CSS
 data TransitionConfig = TransitionConfig
-  { _transitionProperty :: WhenTW TransitionProperty
-  , _transitionDuration :: WhenTW TransitionDuration
-  , _transitionTiming :: WhenTW TransitionTimingFunction
-  , _transitionDelay :: WhenTW TransitionDelay
-  } deriving Show
+  { _transitionDuration :: TransitionDuration
+  , _transitionTiming :: TransitionTimingFunction
+  , _transitionDelay :: TransitionDelay
+  } deriving (Show, Eq)
 
 -- Template Haskell splice - must come after data type definitions
 makeLenses ''TransitionConfig
+
+-- | Legacy global transition config with WhenTW for backwards compatibility
+-- Used for the global _transition field in BoxConfig
+data TransitionConfigGlobal = TransitionConfigGlobal
+  { _transitionProperty :: WhenTW TransitionProperty
+  , _transitionDurationGlobal :: WhenTW TransitionDuration
+  , _transitionTimingGlobal :: WhenTW TransitionTimingFunction
+  , _transitionDelayGlobal :: WhenTW TransitionDelay
+  } deriving Show
+
+makeLenses ''TransitionConfigGlobal
 
 -- Instances for TransitionProperty
 instance Default TransitionProperty where
@@ -104,7 +117,7 @@ instance ShowTW TransitionProperty where
   showTW = \case
     Transition -> "transition"
     Transition_Custom val -> "transition-[" <> val <> "]"
-    other -> T.toLower (tshow other)
+    other -> T.replace "_" "-" $ T.toLower (tshow other)
 
 -- Instances for TransitionDuration
 instance Default TransitionDuration where
@@ -123,7 +136,7 @@ instance Default TransitionTimingFunction where
 instance ShowTW TransitionTimingFunction where
   showTW = \case
     Ease_Custom val -> "ease-[" <> val <> "]"
-    other -> T.toLower (tshow other)
+    other -> T.replace "_" "-" $ T.toLower (tshow other)
 
 -- Instances for TransitionDelay
 instance Default TransitionDelay where
@@ -135,22 +148,29 @@ instance ShowTW TransitionDelay where
     Delay_Custom val -> "delay-[" <> val <> "ms]"
     other -> "delay-" <> (T.drop 6 . tshow $ other)
 
--- Instances for TransitionConfig
+-- Instances for TransitionConfig (simplified, no WhenTW)
 instance Default TransitionConfig where
-  def = TransitionConfig def def def def
+  def = TransitionConfig def def def
 
-instance ShowTW TransitionConfig where
+-- Note: TransitionConfig doesn't have ShowTW instance anymore
+-- It will be rendered contextually when used with WithTransition
+
+-- Instances for TransitionConfigGlobal (legacy)
+instance Default TransitionConfigGlobal where
+  def = TransitionConfigGlobal def def def def
+
+instance ShowTW TransitionConfigGlobal where
   showTW cfg = foldr (<&>) mempty
     [ renderWhenTW (_transitionProperty cfg) showTW
-    , renderWhenTW (_transitionDuration cfg) showTW
-    , renderWhenTW (_transitionTiming cfg) showTW
-    , renderWhenTW (_transitionDelay cfg) showTW
+    , renderWhenTW (_transitionDurationGlobal cfg) showTW
+    , renderWhenTW (_transitionTimingGlobal cfg) showTW
+    , renderWhenTW (_transitionDelayGlobal cfg) showTW
     ]
 
-instance Semigroup TransitionConfig where
-  (<>) a b = TransitionConfig
+instance Semigroup TransitionConfigGlobal where
+  (<>) a b = TransitionConfigGlobal
     { _transitionProperty = _transitionProperty a <> _transitionProperty b
-    , _transitionDuration = _transitionDuration a <> _transitionDuration b
-    , _transitionTiming = _transitionTiming a <> _transitionTiming b
-    , _transitionDelay = _transitionDelay a <> _transitionDelay b
+    , _transitionDurationGlobal = _transitionDurationGlobal a <> _transitionDurationGlobal b
+    , _transitionTimingGlobal = _transitionTimingGlobal a <> _transitionTimingGlobal b
+    , _transitionDelayGlobal = _transitionDelayGlobal a <> _transitionDelayGlobal b
     }

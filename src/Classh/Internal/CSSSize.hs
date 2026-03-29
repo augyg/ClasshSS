@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Internal.CSSSize
+--  Description :  CSS size representation types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -22,10 +23,10 @@
 
 module Classh.Internal.CSSSize where
 
-import Classh.Internal.TShow
+import Classh.Internal.TShow (tshow)
 
 -- we should make a Module tree: Classh.TWSize.(TWSize | CSSSize | Fraction)
-import Classh.Class.IsCSS
+import Classh.Class.IsCSS (IsCSS(..))
 
 -- | For use with Tailwind sizes that allow use of CSS size
 data CSSSize

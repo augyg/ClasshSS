@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Sizing.BoxSizing
+--  Description :  Box sizing types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -34,17 +35,19 @@ module Classh.Box.Sizing.BoxSizing
   , height
   ) where 
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Responsive.WhenTW
-import Classh.Box.TWSize
-import Data.Default
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.Box.TWSize as TWSize
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
+import Data.Default (Default(..))
 import Control.Lens (makeLenses)
 
--- | Holds information on target sizing, which will be overrided by constraints
+-- | Holds information on target sizing (transitionable), which will be overrided by constraints
 data BoxSizing = BoxSizing
-  { _width :: WhenTW TWSizeOrFraction
-  , _height :: WhenTW TWSizeOrFraction
+  { _width :: WhenTW (WithTransition TWSizeOrFraction)
+  , _height :: WhenTW (WithTransition TWSizeOrFraction)
   }
   deriving Show
 
@@ -54,8 +57,8 @@ instance Default BoxSizing where
 
 instance ShowTW BoxSizing where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_width cfg) ((<>) "w-" . showTW)
-    , renderWhenTW (_height cfg) ((<>) "h-" . showTW)
+    [ renderWithTransitionTW (_width cfg) ((<>) "w-" . showTW) Transition_All
+    , renderWithTransitionTW (_height cfg) ((<>) "h-" . showTW) Transition_All
     ]
 
 makeLenses ''BoxSizing

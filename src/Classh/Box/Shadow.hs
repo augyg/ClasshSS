@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Shadow
+--  Description :  Shadow styling types
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -21,9 +22,9 @@
 
 module Classh.Box.Shadow where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Box shadow options

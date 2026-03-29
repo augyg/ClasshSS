@@ -1,9 +1,16 @@
+-- |
+-- Module      : Classh.Text.FontStyle
+-- Description : Font style types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Text.FontStyle where
 
-import Classh.Class.ShowTW
-import Classh.Internal.Utils
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.Utils (toKebabCase)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 

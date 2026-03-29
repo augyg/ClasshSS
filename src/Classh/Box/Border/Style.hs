@@ -1,8 +1,15 @@
+-- |
+-- Module      : Classh.Box.Border.Style
+-- Description : Border style types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.Box.Border.Style where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Border Style options, eg BSolid ==> "border-solid"

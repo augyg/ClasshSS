@@ -1,9 +1,11 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Padding
+--  Description :  Padding configuration for box model
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -42,16 +44,18 @@ module Classh.Box.Padding
   ) where
 
 
-import Classh.Internal.Chain
-import Classh.Class.ShowTW
-import Classh.Class.SetSides
-import Classh.Class.CompileStyle
-import Classh.Responsive.WhenTW
+import Classh.Internal.Chain ((<&>))
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Class.SetSides as SetSides
+import Classh.Class.CompileStyle as CompileStyle
+import Classh.Responsive.WhenTW as WhenTW
+import Classh.WithTransition as WT
+import Classh.Box.Transition (TransitionProperty(..))
 
-import Classh.Box.TWSize as X 
+import Classh.Box.TWSize as X
 
 import Control.Lens hiding ((<&>))
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 
@@ -63,10 +67,10 @@ instance Default BoxPadding where
 
 instance ShowTW BoxPadding where
   showTW cfg = foldr (<&>) mempty
-    [ renderWhenTW (_paddingL cfg) ((<>) "pl-" . showTW)
-    , renderWhenTW (_paddingR cfg) ((<>) "pr-" . showTW)
-    , renderWhenTW (_paddingT cfg) ((<>) "pt-" . showTW)
-    , renderWhenTW (_paddingB cfg) ((<>) "pb-" . showTW)
+    [ renderWithTransitionTW (_paddingL cfg) ((<>) "pl-" . showTW) Transition_All
+    , renderWithTransitionTW (_paddingR cfg) ((<>) "pr-" . showTW) Transition_All
+    , renderWithTransitionTW (_paddingT cfg) ((<>) "pt-" . showTW) Transition_All
+    , renderWithTransitionTW (_paddingB cfg) ((<>) "pb-" . showTW) Transition_All
     ]
 
 -- | For row func
@@ -75,22 +79,22 @@ instance CompileStyle BoxPadding where
 
 compilePadding :: BoxPadding -> Either T.Text T.Text
 compilePadding cfg = pure . foldr (<&>) mempty =<< sequenceA
-  [ compileWhenTW (_paddingL cfg) ((<>) "pl-" . showTW)
-  , compileWhenTW (_paddingR cfg) ((<>) "pr-" . showTW)
-  , compileWhenTW (_paddingT cfg) ((<>) "pt-" . showTW)
-  , compileWhenTW (_paddingB cfg) ((<>) "pb-" . showTW)
+  [ compileWithTransitionTW (_paddingL cfg) ((<>) "pl-" . showTW) Transition_All
+  , compileWithTransitionTW (_paddingR cfg) ((<>) "pr-" . showTW) Transition_All
+  , compileWithTransitionTW (_paddingT cfg) ((<>) "pt-" . showTW) Transition_All
+  , compileWithTransitionTW (_paddingB cfg) ((<>) "pb-" . showTW) Transition_All
   ]
 
--- | Type representing '_padding' field of 'BoxConfig'.
+-- | Type representing '_padding' field of 'BoxConfig' (transitionable).
 -- | based on https://tailwindcss.com/docs/padding
 data BoxPadding = BoxPadding
-  { _paddingL :: WhenTW TWSize
+  { _paddingL :: WhenTW (WithTransition TWSize)
   -- ^ see shorthand: pl
-  , _paddingR :: WhenTW TWSize
+  , _paddingR :: WhenTW (WithTransition TWSize)
   -- ^ see shorthand: pr
-  , _paddingT :: WhenTW TWSize
+  , _paddingT :: WhenTW (WithTransition TWSize)
   -- ^ see shorthand: pt
-  , _paddingB :: WhenTW TWSize
+  , _paddingB :: WhenTW (WithTransition TWSize)
   -- ^ see shorthand: pb
   } deriving Show
 
@@ -107,7 +111,7 @@ instance Semigroup BoxPadding where
 -- | This is technically an illegal lens however if you ran 2 setters which overlap so that a /= b
 -- | where a and b are the fields associated with respective separate fields, then classh' will
 -- | most likely catch the error. Additionally, there is a lens way to access any field anyways
-instance SetSides BoxPadding TWSize where
+instance SetSides BoxPadding (WithTransition TWSize) where
   l = paddingL
   r = paddingR
   b = paddingB

@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Shorthand
+--  Description :  Shorthand aliases for common operations
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -29,10 +30,10 @@
 
 module Classh.Shorthand where
 
-import Classh.Text
-import Classh.Box
-import Classh.Setters
-import Classh.Class.SetSides
+import Classh.Text as Text
+import Classh.Box as Box
+import Classh.Setters as Setters
+import Classh.Class.SetSides as SetSides
 
 import Control.Lens (Lens')
 -- this is purely semantic compression for those familiar with Classh
@@ -40,27 +41,27 @@ import Control.Lens (Lens')
 type Setter a b = Lens' a b
 
 -- | Set border radius side(s)
-br_r, br_l, br_t, br_b, br_y, br_x, br :: Setter BoxConfig (WhenTW BorderRadius')
-br_r = border . radius . r 
+br_r, br_l, br_t, br_b, br_y, br_x, br :: Setter BoxConfig (WhenTW (WithTransition BorderRadius'))
+br_r = border . radius . r
 br_l = border . radius . l
 br_t = border . radius . t
 br_b = border . radius . b
 br_y = border . radius . y
 br_x = border . radius . x
-br = border . radius . allS 
+br = border . radius . allS
 
 -- | Set border width side(s)
-bw_r, bw_l, bw_t, bw_b, bw_y, bw_x, bw :: Setter BoxConfig (WhenTW BorderWidth)
-bw_r = border . bWidth . r 
+bw_r, bw_l, bw_t, bw_b, bw_y, bw_x, bw :: Setter BoxConfig (WhenTW (WithTransition BorderWidth))
+bw_r = border . bWidth . r
 bw_l = border . bWidth . l
 bw_t = border . bWidth . t
 bw_b = border . bWidth . b
 bw_y = border . bWidth . y
 bw_x = border . bWidth . x
-bw = border . bWidth . allS 
+bw = border . bWidth . allS
 
 -- | Set border color side(s)
-bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Setter BoxConfig (WhenTW Color)
+bc_r, bc_l, bc_t, bc_b, bc_y, bc_x, bc :: Setter BoxConfig (WhenTW (WithTransition ColorWithOpacity))
 bc_r = border . bColor . r 
 bc_l = border . bColor . l
 bc_t = border . bColor . t
@@ -74,33 +75,33 @@ pos :: Setter BoxConfig (WhenTW (Justify, Align))
 pos = position
 
 -- | Set width
-width' :: Setter BoxConfig (WhenTW TWSizeOrFraction)
+width' :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 width' = sizingBand . size . width
 -- | Set width
-w :: Setter BoxConfig (WhenTW TWSizeOrFraction)
+w :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 w = width'
 -- | Set height
-height' :: Setter BoxConfig (WhenTW TWSizeOrFraction)
+height' :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 height' = sizingBand . size . height
 -- | Set height
-h :: Setter BoxConfig (WhenTW TWSizeOrFraction)
+h :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 h = height'
 
--- | Set BoxConfig max width 
-maxW :: Setter BoxConfig (WhenTW DimensionConstraint)
+-- | Set BoxConfig max width
+maxW :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
 maxW = sizingBand . maxSize . widthC
 -- | Set BoxConfig min width
-minW :: Setter BoxConfig (WhenTW DimensionConstraint)
+minW :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
 minW = sizingBand . minSize . widthC
 -- | Set BoxConfig max height
-maxH :: Setter BoxConfig (WhenTW DimensionConstraint)
+maxH :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
 maxH = sizingBand . maxSize . heightC
 -- | Set BoxConfig min height
-minH :: Setter BoxConfig (WhenTW DimensionConstraint)
-minH = sizingBand . minSize . heightC 
+minH :: Setter BoxConfig (WhenTW (WithTransition DimensionConstraint))
+minH = sizingBand . minSize . heightC
 
 -- | Set margin on a given side(s)
-mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW TWSize)
+mt, ml, mr, mb, mx, my, m :: Setter BoxConfig (WhenTW (WithTransition TWSizeOrFraction))
 mt = margin . t
 mb = margin . b
 ml = margin . l
@@ -110,7 +111,7 @@ my = margin . y
 m = margin . allS
 
 -- | Set padding on a given side(s)
-pt, pl, pr, pb, px, py, p :: Setter BoxConfig (WhenTW TWSize)
+pt, pl, pr, pb, px, py, p :: Setter BoxConfig (WhenTW (WithTransition TWSize))
 pt = padding . t
 pb = padding . b
 pl = padding . l

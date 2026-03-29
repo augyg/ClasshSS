@@ -1,8 +1,15 @@
+-- |
+-- Module      : Classh.TextPosition.Track
+-- Description : Letter spacing (tracking) types
+-- Copyright   : (c) Galen Sprout, 2024
+-- License     : MIT
+-- Maintainer  : galen.sprout@gmail.com
+
 module Classh.TextPosition.Track where
 
 
-import Classh.Class.ShowTW
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 

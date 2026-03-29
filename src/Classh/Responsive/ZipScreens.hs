@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Responsive.WhenTW 
+--  Description :  Responsive breakpoint screen types and operators
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -24,8 +25,8 @@
 module Classh.Responsive.ZipScreens where
 
 import Classh.Responsive.WhenTW as X 
-import Classh.Class.ShowTW 
-import Data.Default
+import Classh.Class.ShowTW (ShowTW(..))
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | Eg

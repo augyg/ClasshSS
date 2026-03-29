@@ -26,7 +26,7 @@ extra-doc-files:    CHANGELOG.md
 -- extra-source-files:
 
 common warnings
-    ghc-options: -Wall
+    ghc-options: -Wall 
 
 library
     import:           warnings
@@ -34,6 +34,7 @@ library
                      Classh.Box
                      Classh.Box.Border
                      Classh.Box.DivInt
+                     Classh.Box.Gradient
                      Classh.Box.Margin
                      Classh.Box.Padding
                      Classh.Box.Placement
@@ -93,7 +94,8 @@ library
                      Classh.TextPosition.WhiteSpace
                      Classh.TextPosition.WordBreak
                      Classh.TextPosition.Wrap
-                     
+                     Classh.WithTransition
+
 
     default-extensions:
         OverloadedStrings
@@ -114,4 +116,67 @@ library
                       -->= 1.2.5 && < 1.3
     hs-source-dirs:   src
     ghc-options: -Wall -Werror -O -threaded -fno-show-valid-hole-fits
+    if impl(ghc >= 9.4)
+      build-depends: henforcer
+      ghc-options: -fplugin Henforcer
+    default-language: Haskell2010
+
+test-suite transition-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          TransitionTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
+    default-language: Haskell2010
+
+test-suite comprehensive-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          ComprehensiveTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
+    default-language: Haskell2010
+
+test-suite generate-html-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          GenerateHTMLTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
+    default-language: Haskell2010
+
+test-suite transform-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          TransformTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
+    default-language: Haskell2010
+
+test-suite gradient-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          GradientTest.hs
+    build-depends:    base
+                    , ClasshSS
+                    , data-default
+                    , lens
+                    , text
     default-language: Haskell2010

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Border
+--  Description :  Fraction denominator types for sizing
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -21,10 +22,10 @@
 
 module Classh.Box.DivInt where
 
-import Classh.Class.ShowTW
-import Classh.Internal.TShow
+import Classh.Class.ShowTW (ShowTW(..))
+import Classh.Internal.TShow (tshow)
 
-import Data.Default
+import Data.Default (Default(..))
 import qualified Data.Text as T
 
 -- | (w|h)-'DivInt', eg. w-11/12

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- |
 --  Module      :  Classh.Box.Placement
+--  Description :  Element placement and alignment
 --  Copyright   :  (c) 2024, Galen Sprout
 --  License     :  BSD-style (see end of this file)
 --
@@ -30,7 +31,8 @@
 
 
 module Classh.Box.Placement
-  ( module X
+  ( module Justify
+  , module Align
   , Matrix33(..)
   , topLeft
   , middleLeft
@@ -44,11 +46,11 @@ module Classh.Box.Placement
   , centeredOnly
   ) where
 
-import Classh.Box.Placement.Justify as X 
-import Classh.Box.Placement.Align as X
+import Classh.Box.Placement.Align as Align
+import Classh.Box.Placement.Justify as Justify
 
-import Classh.Responsive.WhenTW
-import Classh.Responsive.ZipScreens 
+import Classh.Responsive.WhenTW (WhenTW)
+import Classh.Responsive.ZipScreens (only)
 
 
 -- | Eg tic tac toe, except we use to describe position of element
